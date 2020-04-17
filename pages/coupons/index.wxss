@@ -180,3 +180,12 @@ page {
 .pwd-coupons button {
   margin: 32rpx;
 }
+.ceshi{
+  position: fixed;
+  top: 100rpx;
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+  text-align: center;
+
+}

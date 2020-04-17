@@ -10,12 +10,16 @@ Page({
   data: {
     tabs: ["二维码","可领券", "已领券", "已失效"],
     activeIndex: 0,
-    showPwdPop: false
+    showPwdPop: false,
+    asd: false
   },
 
   
   
   ceshi() {
+    this.setData({
+      asd : true
+    })
     wx.request({
       url: `http://qr.liantu.com/api.php`,
       data: {
@@ -36,7 +40,7 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (e) {
-
+    this.ceshi();
   },
 
   /**
@@ -92,6 +96,13 @@ Page({
 
   },
   tabClick: function (e) {
+    if(e.currentTarget.dataset.id == 0) {
+      this.ceshi();
+    } else {
+      this.setData({
+        asd: false
+      })
+    }
     this.setData({
       activeIndex: e.currentTarget.dataset.id
     });
