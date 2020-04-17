@@ -68,6 +68,24 @@ Page({
         });
       }
     })
-  }
+  },
+
+  deleteAddress: function (e) {
+    const id = e.currentTarget.dataset.id;
+    console.log(e)
+    wx.showModal({
+      title: '提示',
+      content: '确定要删除该收货地址吗？',
+      success: function (res) {
+        if (res.confirm) {
+          WXAPI.deleteAddress(wx.getStorageSync('token'), id).then(function () {
+            wx.navigateBack({})
+          })
+        } else {
+          console.log('用户点击取消')
+        }
+      }
+    })
+  },
 
 })

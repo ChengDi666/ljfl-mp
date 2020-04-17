@@ -76,6 +76,7 @@ Page({
       recommendStatus: 1
     }).then(res => {
       if (res.code === 0){
+        console.log(res.data)  // 获取爆品推荐商品详情
         that.setData({
           goodsRecommend: res.data
         })

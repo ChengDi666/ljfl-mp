@@ -3,6 +3,7 @@ const CONFIG = require('../../config.js')
 const WXAPI = require('apifm-wxapi')
 const AUTH = require('../../utils/auth')
 const TOOLS = require('../../utils/tools.js')
+const Add = require('../../utils/myApi')
 
 Page({
 	data: {
@@ -50,7 +51,22 @@ Page({
       url: '/pages/my/index'
     })
   },
+  async ceshi(data) {
+    console.log(data)
+    const a = await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    console.log(a)
+    const b = await Add.queryUserOpenid(a.data.openid);
+    console.log(b)
+    if(b.length == 0) {
+      Add.getUserMessage({
+        nickname: data.nick,
+        phonenumber: data.mobile,
+        openid: a.data.openid
+      });
+    }
+  },
   getPhoneNumber: function(e) {
+    console.log(e)
     if (!e.detail.errMsg || e.detail.errMsg != "getPhoneNumber:ok") {
       wx.showModal({
         title: '提示',
@@ -60,6 +76,7 @@ Page({
       return;
     }
     WXAPI.bindMobileWxa(wx.getStorageSync('token'), e.detail.encryptedData, e.detail.iv).then(res => {
+      console.log(res)
       if (res.code === 10002) {
         this.setData({
           wxlogin: false
@@ -72,7 +89,10 @@ Page({
           icon: 'success',
           duration: 2000
         })
-        this.getUserApiInfo();
+        this.getUserApiInfo('true').then((res) => {
+          // console.log(res.base)
+          this.ceshi(res.base);
+        });
       } else {
         wx.showModal({
           title: '提示',
@@ -82,9 +102,10 @@ Page({
       }
     })
   },
-  getUserApiInfo: function () {
+  getUserApiInfo: function (isReturn) {
     var that = this;
-    WXAPI.userDetail(wx.getStorageSync('token')).then(function (res) {
+    return WXAPI.userDetail(wx.getStorageSync('token')).then(function (res) {
+      console.log(res)
       if (res.code == 0) {
         let _data = {}
         _data.apiUserInfoMap = res.data
@@ -95,12 +116,17 @@ Page({
           _data.canHX = true // 具有扫码核销的权限
         }
         that.setData(_data);
+        console.log(_data)
+        if(isReturn) {
+          return res.data;
+        }
       }
     })
   },
   getUserAmount: function () {
     var that = this;
     WXAPI.userAmount(wx.getStorageSync('token')).then(function (res) {
+      console.log(res)
       if (res.code == 0) {
         that.setData({
           balance: res.data.balance.toFixed(2),

@@ -126,3 +126,6 @@
     <button type="primary" plain bindtap="getCounpon2"> 领取 </button>
   </view>
 </block>
+
+<button bindtap="ceshi">二维码测试</button>
+<image style="width: 300px; height: 300px; margin-left:50px;" src="{{aaa}}"></image>

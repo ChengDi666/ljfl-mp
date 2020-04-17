@@ -67,12 +67,8 @@ async function login(page){
   const _this = this
   wx.login({
     success: function (res) {
-      const App = getApp()
-      console.log(App.globalData.userOpenId)
-      console.log(res)
-      WXAPI.login_wx(res.code).then( (res) => {        
+      WXAPI.login_wx(res.code).then( (res) => {
         console.log(res)
-        App.globalData.userOpenId = res.data.openid;
         if (res.code == 10000) {
           // 去注册
           //_this.register(page)

@@ -56,7 +56,7 @@
         <view class="goods-title">{{item.name}}</view>
         <view style='display:flex;'>
           <view class="goods-price">¥ {{item.minPrice}}</view>
-          <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;text-decoration:line-through'>¥ {{item.originalPrice}}</view>
+          <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;'>积分: {{item.minScore}}</view>
         </view>
       </view>
     </view>
@@ -72,7 +72,7 @@
       <view class="goods-title">{{item.name}}</view>
       <view style='display:flex;'>
         <view class="goods-price">¥ {{item.minPrice}}</view>
-        <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;text-decoration:line-through'>¥ {{item.originalPrice}}</view>
+        <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;'>积分: {{item.minScore}}</view>
       </view>
     </view>
   </view>
@@ -139,7 +139,7 @@
       <view class="goods-title">{{item.name}}</view>
       <view style='display:flex;'>
         <view class="goods-price">¥ {{item.minPrice}}</view>
-        <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;text-decoration:line-through'>¥ {{item.originalPrice}}</view>
+        <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;'>积分: {{item.minScore}}</view>
       </view>
     </view>
   </view>

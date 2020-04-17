@@ -99,6 +99,7 @@ Page({
   async getGoodsDetailAndKanjieInfo(goodsId) {
     const that = this;
     const goodsDetailRes = await WXAPI.goodsDetail(goodsId)
+    console.log(goodsDetailRes)
     const goodsKanjiaSetRes = await WXAPI.kanjiaSet(goodsId)
     if (goodsDetailRes.code == 0) {
       var selectSizeTemp = SelectSizePrefix;

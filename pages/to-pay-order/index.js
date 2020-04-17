@@ -24,7 +24,9 @@ Page({
     curCouponShowText: '请选择使用优惠券', // 当前选择使用的优惠券
     allowSelfCollection: '0', // 是否允许到店自提
     peisongType: 'kd', // 配送方式 kd,zq 分别表示快递/到店自取
-    remark: ''
+    remark: '',
+    user_score: 0,
+    switchChecked: false
   },
   onShow(){
     AUTH.checkHasLogined().then(isLogined => {
@@ -36,6 +38,13 @@ Page({
       }
     })
   },
+  switch1Change(e) {
+    console.log(e.detail.value)
+    this.setData({
+      switchChecked: e.detail.value
+    })
+  },
+
   async doneShow() {
     let allowSelfCollection = wx.getStorageSync('ALLOW_SELF_COLLECTION')
     if (!allowSelfCollection || allowSelfCollection != '1') {
@@ -50,10 +59,12 @@ Page({
       this.data.kjId = buyNowInfoMem.kjId;
       if (buyNowInfoMem && buyNowInfoMem.shopList) {
         shopList = buyNowInfoMem.shopList
+        console.log(shopList)
       }
     } else {
       //购物车下单
       const res = await WXAPI.shippingCarInfo(token)
+      console.log(res)
       if (res.code == 0) {
         shopList = res.data.items
       }
@@ -67,6 +78,14 @@ Page({
   },
 
   onLoad(e) {
+    WXAPI.userAmount(wx.getStorageSync('token')).then((res) => {
+      console.log(res)
+      if (res.code == 0) {
+        this.setData({
+          user_score: res.data.score
+        });
+      }
+    })
     let _data = {
       isNeedLogistics: 1
     }
@@ -152,6 +171,7 @@ Page({
     }
 
     WXAPI.orderCreate(postData).then(function (res) {
+      console.log(res)
       if (res.code != 0) {
         wx.showModal({
           title: '错误',

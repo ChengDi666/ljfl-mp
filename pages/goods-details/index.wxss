@@ -285,8 +285,8 @@ swiper-item image {
 .pop-goods-price-original{
   font-size:26rpx;
   color: #aaa;
-  text-decoration: line-through;
-  margin-left: 16rpx;
+  /* text-decoration: line-through; */
+  margin-left: 20rpx;
 }
 .pop-goods-close{
   width: 36rpx;

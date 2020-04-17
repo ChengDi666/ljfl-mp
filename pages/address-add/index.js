@@ -16,8 +16,14 @@ Page({
 
     sel_showModal:false,
     value: [0],
+    user_openid: '',
+    add_id: ''
   },
 
+
+shiyan(e) {
+  Add.amendCustomersAddress(e);
+},
 
   
   regionchange(e) {
@@ -33,11 +39,13 @@ Page({
           console.log(res, 11111)
           Add.AddressRange(res.latitude, res.longitude).then((result) => {
             console.log(result);
+            if(result.statusCode == 500) { return }
+            const list = result.data.map((item) => {
+              item.checked = false;
+              return item
+            })
             this.setData({
-              addressList: result.data.map((item) => {
-                item.checked = false;
-                return item
-              })
+              addressList: list
             });
           });
           that.setData({
@@ -171,7 +179,10 @@ Page({
         wx.hideLoading()
       })
       this.data.qqq = this.data.qqq.split(' ');
+      console.log(this.data.xiaoquAdd)
       this.data.qqq[valueCheng.column] = this.data.xiaoquAdd[valueCheng.column][valueCheng.row].name
+      this.data.add_id = this.data.xiaoquAdd[this.data.xiaoquAdd.length-1][valueCheng.row]
+      console.log(this.data.add_id)
       this.setData({
         qqq: this.data.qqq.join(' ')
       })
@@ -266,33 +277,46 @@ Page({
 
 async bindSave(e) {
   console.log(e)
-  if (this.data.pIndex == 0) {
+  const uid = await Add.queryUserOpenid(this.data.user_openid)
+  uid[0].addresses = [this.data.add_id]
+  console.log(uid)
+  this.shiyan({
+    address: this.data.add_id,
+    id: uid[0].id,
+    uid: uid
+  })
+  if (!this.data.checkedAdd.id) {
     wx.showToast({
-      title: '请选择省份',
+      title: '请选择地址',
       icon: 'none'
     })
     return
   }
-
-  const linkMan = e.detail.value.linkMan;
-  const address = e.detail.value.address;
-  const mobile = e.detail.value.mobile;
-  const code = '322000';
-  if (linkMan == "") {
-    wx.showToast({
-      title: '请填写联系人姓名',
-      icon: 'none'
+  let p_id
+  let c_id
+  const username = this.data.checkedAdd.fullname + ' ' + this.data.qqq
+  const p_index = username.indexOf('省')+1
+  const c_index = username.indexOf('市')+1
+  const str = username.substring(0,p_index);
+  const strs = username.substring(p_index, p_index+3);
+  const add_s = username.substring(p_index+2, username.length);
+  console.log(add_s)
+  if(str) {
+    this.data.provinces.map((item) => {
+      if(item.name == str) {
+        p_id = item.id
+        console.log(item)
+      }
     })
-    return
   }
-  if (mobile == "") {
-    wx.showToast({
-      title: '请填写手机号码',
-      icon: 'none'
-    })
-    return
-  }
-  if (address == "") {
+  const cities = await WXAPI.nextRegion(p_id);
+  cities.data.map((item) => {
+    if(item.name == '合肥市') {
+      c_id = item.id
+      console.log(item)
+    }
+  })
+  if (add_s == "") {
     wx.showToast({
       title: '请填写详细地址',
       icon: 'none'
@@ -301,20 +325,12 @@ async bindSave(e) {
   }
   const postData = {
     token: wx.getStorageSync('token'),
-    linkMan: linkMan,
-    address: address,
-    mobile: mobile,
-    code: code,
+    linkMan: this.data.nick,
+    address: add_s,
+    mobile: this.data.mobile,
     isDefault: 'true',
-  }
-  if (this.data.pIndex > 0) {
-    postData.provinceId = this.data.provinces[this.data.pIndex].id
-  }
-  if (this.data.cIndex > 0) {
-    postData.cityId = this.data.cities[this.data.cIndex].id
-  }
-  if (this.data.aIndex > 0) {
-    postData.districtId = this.data.areas[this.data.aIndex].id
+    provinceId: p_id,
+    cityId: c_id
   }
   let apiResult
   if (this.data.id) {
@@ -339,10 +355,36 @@ async bindSave(e) {
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
-  onReady: function () {
+  async onReady () {
+    //  通过本地存储的token 获取Openid
+    const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    console.log(a)
+    this.setData({
+      user_openid: a.data.openid
+    })
+    const b = await WXAPI.userDetail(wx.getStorageSync('token'))
+    if(!b.data.base.mobile) {
+      wx.showToast({
+        title: '未绑定手机号',
+        icon: 'none'
+      })
+    }
+    console.log(b)
+    this.setData({
+      mobile: b.data.base.mobile,
+      nick: b.data.base.nick
+    })
     
-    const Apps = getApp();
-    console.log(Apps.globalData.userOpenId)
+  console.log({
+    nickname: this.data.nick,
+    mobile: this.data.mobile,
+    openid: this.data.user_openid
+  })
+  Add.ceshi({
+    score: '10',
+    phonenumber: this.data.mobile,
+    token: wx.getStorageSync('token')
+  });
     wx.getLocation({
       type: 'gcj02', //wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标
       success: (res) => {
@@ -350,11 +392,13 @@ async bindSave(e) {
         this.data.longitude = res.longitude
         Add.AddressRange(res.latitude, res.longitude).then((result) => {
           console.log(result);
+          if(result.statusCode == 500) { return }
+          const list = result.data.map((item) => {
+            item.checked = false;
+            return item
+          })
           this.setData({
-            addressList: result.data.map((item) => {
-              item.checked = false;
-              return item
-            })
+            addressList: list
           });
         });
         this.setData({
@@ -374,6 +418,13 @@ async bindSave(e) {
         // })
       }      
     })
+    WXAPI.province().then((res) => {
+      console.log(res)
+      this.setData({
+        provinces: res.data
+      })
+
+    })
 
     
   },
@@ -383,6 +434,7 @@ async onLoad(e) {
 
   if (e.id) { // 修改初始化数据库数据
     const res = await WXAPI.addressDetail(wx.getStorageSync('token'), e.id)
+    console.log(res)
     if (res.code == 0) {
       this.setData({
         id: e.id,
@@ -413,62 +465,6 @@ deleteAddress: function (e) {
       } else {
         console.log('用户点击取消')
       }
-    }
-  })
-},
-async readFromWx() {
-  let that = this;
-  wx.chooseAddress({
-    success: function (res) {
-      console.log(res)
-      const provinceName = res.provinceName;
-      const cityName = res.cityName;
-      const diatrictName = res.countyName;
-      // 读取省
-      const pIndex = that.data.provinces.findIndex(ele => {
-        return ele.name == provinceName
-      })
-      if (pIndex != -1) {
-        const e = {
-          detail: {
-            value: pIndex
-          }
-        }
-        that.provinceChange(e, 0, 0).then(() => {
-          // 读取市
-          const cIndex = that.data.cities.findIndex(ele => {
-            return ele.name == cityName
-          })
-          if (cIndex != -1) {
-            const e = {
-              detail: {
-                value: cIndex
-              }
-            }
-            that.cityChange(e, 0).then(() => {
-              // 读取区县
-              const aIndex = that.data.areas.findIndex(ele => {
-                return ele.name == diatrictName
-              })
-              if (aIndex != -1) {
-                const e = {
-                  detail: {
-                    value: aIndex
-                  }
-                }
-                that.areaChange(e)
-              }
-            })
-          }
-        })
-      }
-      const addressData = {}
-      addressData.linkMan = res.userName
-      addressData.mobile = res.telNumber
-      addressData.address = res.detailInfo
-      that.setData({
-        addressData
-      });
     }
   })
 },

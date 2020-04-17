@@ -8,11 +8,29 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tabs: ["可领券", "已领券", "已失效"],
+    tabs: ["二维码","可领券", "已领券", "已失效"],
     activeIndex: 0,
-
     showPwdPop: false
   },
+
+  
+  
+  ceshi() {
+    wx.request({
+      url: `http://qr.liantu.com/api.php`,
+      data: {
+        text: '18602005866'
+      },
+      responseType: 'arraybuffer',
+      success: (res) => {
+        console.log(res)
+        this.setData({
+          aaa: 'data:image/png;base64,' + wx.arrayBufferToBase64(res.data)
+        })
+      }
+    })
+  },
+  
 
   /**
    * 生命周期函数--监听页面加载
