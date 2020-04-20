@@ -66,7 +66,7 @@ function getUserMessage(userData) {
       },
       success (res) {
         console.log(res.data)
-        // return resolve(res)
+        return resolve(res)
       }
     })
   });
@@ -74,13 +74,12 @@ function getUserMessage(userData) {
 
 
 function amendCustomersAddress(userData) {
+  //  客户添加地址
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `https://api.jssrxx.com/api/customers/9`,
+      url: `https://api.jssrxx.com/api/customers/${userData.id}`,
       data: {
         addresses: [userData.address]
-        // customers: userData.uid
-        // nickname: "程帝"
       },
       method: 'PUT',
       header: {
@@ -88,7 +87,7 @@ function amendCustomersAddress(userData) {
       },
       success (res) {
         console.log(res.data)
-        // return resolve(res)
+        return resolve(res)
       }
     })
   });

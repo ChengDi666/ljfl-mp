@@ -1,14 +1,15 @@
 <view class="tabs">
   <view class="item {{activeIndex == index ? 'active' : ''}}" wx:for="{{tabs}}" wx:key="*this" data-id="{{index}}" bindtap="tabClick">{{item}}</view>
 </view>
-<view wx:if="{{ asd }}" class="ceshi">
-  <!-- <button bindtap="ceshi">二维码测试</button> -->
-  <image style="width: 300px; height: 300px; margin-top: 30px" src="{{aaa}}"></image>
+<view wx:if="{{ showImg }}" class="ceshi">
+  <!-- <image style="width: 300px; height: 300px; margin-top: 30px" src="{{imageUrl}}"></image> -->
+  <canvas style="width:{{qrcodeWidth}}px; height:{{qrcodeWidth}}px;margin:60px auto;" canvas-id='canvas' bindlongtap='save'></canvas>
   <view>我的二维码</view>
 </view>
 <view wx:if="{{ !coupons || coupons.length == 0 }}" class="empty">
   <image src="/images/icon/coupons-empty.svg"></image>
   <view>暂无优惠券</view>
+  
 </view>
 <view class="coupons" wx:for="{{coupons}}" wx:key="id" wx:if="{{activeIndex == 0}}">
   <image class="icon" src="/images/icon/coupons-active.svg"></image>

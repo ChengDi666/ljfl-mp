@@ -8,7 +8,7 @@ Page({
     addressList: [[''],[''],['']],
     showModal:false,
     checkedAdd: {},
-    qqq: '请选择',
+    longAddress: '请选择',
     xiaoquAdd: [],
     xiaoquIndex: [0,0],
 
@@ -27,6 +27,9 @@ shiyan(e) {
 
   
   regionchange(e) {
+    wx.showLoading({
+      title: '加载中',
+    })
     // console.log(e)
     // 地图发生变化的时候，获取中间点，也就是用户选择的位置toFixed
     if (e.type == 'end' && (e.causedBy == 'scale' || e.causedBy == 'drag')) {
@@ -36,7 +39,7 @@ shiyan(e) {
       this.mapCtx.getCenterLocation({
         type: 'gcj02',
         success: (res) => {
-          console.log(res, 11111)
+          console.log(res)
           Add.AddressRange(res.latitude, res.longitude).then((result) => {
             console.log(result);
             if(result.statusCode == 500) { return }
@@ -44,6 +47,7 @@ shiyan(e) {
               item.checked = false;
               return item
             })
+            wx.hideLoading()
             this.setData({
               addressList: list
             });
@@ -70,14 +74,14 @@ shiyan(e) {
   that.onLoad();
 },
 
-    // 外面的弹窗
+    // 外面的弹窗-选择器
     sel_btn () {
       this.setData({
         sel_showModal:true
       })
     },
    
-    // 弹出层里面的弹窗
+    // 弹出层里面的弹窗-选择器
     sel_call () {
       wx.showToast({
         title: '未选择地址',
@@ -88,12 +92,12 @@ shiyan(e) {
       setTimeout(() => {
         this.setData({
           sel_showModal: false,
-          checkedAdd: {},
-          addressList: []
+          // checkedAdd: {},
+          // addressList: []
         })
       }, 500);
     },
-
+    // -选择器
     sel_haode() {
       if(this.data.checkedAdd.checked) {
         this.setData({
@@ -120,24 +124,36 @@ shiyan(e) {
     },
 
     dChange(e) {
+      //  值变动
       wx.showLoading({
         title: '加载中',
       })
-      console.log(e)
+      // console.log(e)
       console.log(this.data.value)
       console.log(e.detail.value)
       let valueCheng = {
         column: '',
         row: ''
       }
-      e.detail.value.map((item, index) => {
+      let isChange = false;
+      this.data.value = e.detail.value.map((item, index) => {
+        if(isChange) {
+          console.log(index)
+          return 0;
+        }
         if(item != this.data.value[index]) {
+          isChange = true
           valueCheng.column = index;
           valueCheng.row = item;
           console.log('第' + valueCheng.column + '列,第' + valueCheng.row + '行,变了')
+          return item;
         }
+        return item;
       });
-      this.data.value = e.detail.value
+      console.log(this.data.value)
+      this.setData({
+        value: this.data.value
+      })
       // const a = e.detail.value[0]
       // console.log(a)
       // console.log(this.data.addressList[0][a])
@@ -145,9 +161,9 @@ shiyan(e) {
       const delNum = this.data.xiaoquAdd.length - (valueCheng.column + 1);
       if(addId == 0) {
         this.data.xiaoquAdd.splice(valueCheng.column + 1, delNum);
-        e.detail.value.splice(valueCheng.column + 1, delNum);
+        this.data.value.splice(valueCheng.column + 1, delNum);
         this.setData({
-          value: e.detail.value,
+          value: this.data.value,
           xiaoquAdd: this.data.xiaoquAdd
         })
         wx.hideLoading()
@@ -159,32 +175,35 @@ shiyan(e) {
         console.log(res)
         if(res.length < 1) {
           this.data.xiaoquAdd.splice(valueCheng.column + 1, delNum);
-          e.detail.value.splice(valueCheng.column + 1, delNum);
+          this.data.value.splice(valueCheng.column + 1, delNum);
           this.setData({
-            value: e.detail.value,
+            value: this.data.value,
             xiaoquAdd: this.data.xiaoquAdd
           })
           wx.hideLoading()
           console.log(this.data.xiaoquAdd)
           console.log(this.data.value)
+          if(!this.data.xiaoquAdd[this.data.xiaoquAdd.length - 1][1].hasChildren) {
+            //  最后一列数据，且没有子地址
+          }
           return ;
         }
         this.data.xiaoquAdd[valueCheng.column + 1] = res
         this.data.xiaoquAdd.splice(valueCheng.column + 2, delNum);
-        e.detail.value.push(0);
+        this.data.value.push(0);
         this.setData({
-          value: e.detail.value,
+          value: this.data.value,
           xiaoquAdd: this.data.xiaoquAdd
         })
         wx.hideLoading()
       })
-      this.data.qqq = this.data.qqq.split(' ');
+      this.data.longAddress = this.data.longAddress.split(' ');
       console.log(this.data.xiaoquAdd)
-      this.data.qqq[valueCheng.column] = this.data.xiaoquAdd[valueCheng.column][valueCheng.row].name
+      this.data.longAddress[valueCheng.column] = this.data.xiaoquAdd[valueCheng.column][valueCheng.row].name
       this.data.add_id = this.data.xiaoquAdd[this.data.xiaoquAdd.length-1][valueCheng.row]
       console.log(this.data.add_id)
       this.setData({
-        qqq: this.data.qqq.join(' ')
+        longAddress: this.data.longAddress.join(' ')
       })
     },
 
@@ -193,12 +212,12 @@ shiyan(e) {
         if(res.data.length < 1) {
           return res.data;
         }
-        const aaa = [{
+        const newData = [{
           id: 0,
           name: '请选择'
         }].concat(res.data)
         console.log(res);
-        return aaa;
+        return newData;
       });
     },
 
@@ -282,8 +301,7 @@ async bindSave(e) {
   console.log(uid)
   this.shiyan({
     address: this.data.add_id,
-    id: uid[0].id,
-    uid: uid
+    id: uid[0].id
   })
   if (!this.data.checkedAdd.id) {
     wx.showToast({
@@ -294,16 +312,16 @@ async bindSave(e) {
   }
   let p_id
   let c_id
-  const username = this.data.checkedAdd.fullname + ' ' + this.data.qqq
-  const p_index = username.indexOf('省')+1
-  const c_index = username.indexOf('市')+1
-  const str = username.substring(0,p_index);
-  const strs = username.substring(p_index, p_index+3);
-  const add_s = username.substring(p_index+2, username.length);
-  console.log(add_s)
+  const username = this.data.checkedAdd.fullname + '.' + this.data.longAddress
+  const userAddressArr = username.split('.');
+  console.log(userAddressArr)
+  const a = userAddressArr;
+  a.splice(0,2);
+  const shortAddress = a.join('.');
+  console.log(shortAddress)
   if(str) {
     this.data.provinces.map((item) => {
-      if(item.name == str) {
+      if(item.name == userAddressArr[0]) {
         p_id = item.id
         console.log(item)
       }
@@ -311,12 +329,12 @@ async bindSave(e) {
   }
   const cities = await WXAPI.nextRegion(p_id);
   cities.data.map((item) => {
-    if(item.name == '合肥市') {
+    if(item.name == userAddressArr[1]) {
       c_id = item.id
       console.log(item)
     }
   })
-  if (add_s == "") {
+  if (shortAddress == "") {
     wx.showToast({
       title: '请填写详细地址',
       icon: 'none'
@@ -326,7 +344,7 @@ async bindSave(e) {
   const postData = {
     token: wx.getStorageSync('token'),
     linkMan: this.data.nick,
-    address: add_s,
+    address: shortAddress,
     mobile: this.data.mobile,
     isDefault: 'true',
     provinceId: p_id,

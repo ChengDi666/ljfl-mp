@@ -2,13 +2,13 @@
 	<view class="page__bd">
 		<form bindsubmit="bindSave">
 			<view class="weui-cells weui-cells_after-title">
-				<view wx:if="{{!id && provinces}}" class="weui-cell weui-cell_select" bindtap="readFromWx">
+				<!-- <view wx:if="{{!id && provinces}}" class="weui-cell weui-cell_select" bindtap="readFromWx">
 					<view class="weui-cell__bd">
 						<view class="weui-select weui-select_in-select-after read-wx">
 							获取微信收货地址
 						</view>
 					</view>
-				</view>
+				</view> -->
 				<view class="space"></view>
 
 				<view class="weui-cell weui-cell_select my-select">
@@ -35,7 +35,7 @@
 						<view class="weui-label">具体地址：</view>
 					</view>
 					<view class="weui-cell__bd">
-					<view class="weui-select weui-select_in-select-after" bindtap="sel_btn">{{qqq}}</view>
+					<view class="weui-select weui-select_in-select-after" bindtap="sel_btn">{{longAddress}}</view>
 					</view>
 				</view>
 				
@@ -45,14 +45,14 @@
 
 			<view class="weui-btn-area">
 				<button type="primary" class="save-btn" formType="submit">保存</button>
-				<button type="danger" class="save-btn" bindtap="deleteAddress" data-id="{{addressData.id}}" wx:if="{{id}}">删除该地址</button>
+				<!-- <button type="danger" class="save-btn" bindtap="deleteAddress" data-id="{{addressData.id}}" wx:if="{{id}}">删除该地址</button> -->
 			</view>
 		</form>
 	</view>
 </view>
 
 
-<!--index.wxml-->
+<!--滚动地址选择器-->
 <!-- 遮罩层 -->
 <view class="sel_mask" catchtouchmove="preventTouchMove" wx:if="{{sel_showModal}}"></view>
 <!-- 弹出层 -->
@@ -74,7 +74,7 @@
 </view>
 
 
-<!--index.wxml-->
+<!--地图选点-->
 <!-- 遮罩层 -->
 <view class="mask" catchtouchmove="preventTouchMove" wx:if="{{showModal}}"></view>
 <!-- 弹出层 -->

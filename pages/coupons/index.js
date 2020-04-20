@@ -1,6 +1,8 @@
 const WXAPI = require('apifm-wxapi')
 const AUTH = require('../../utils/auth')
+var QRCode = require('../../utils/qr-core.js')
 
+var qrcode = null;
 var sliderWidth = 96; // 需要设置slider的宽度，用于计算中间位置
 Page({
 
@@ -11,36 +13,110 @@ Page({
     tabs: ["二维码","可领券", "已领券", "已失效"],
     activeIndex: 0,
     showPwdPop: false,
-    asd: false
+    showImg: false,
+    qrcodeWidth: 0
   },
 
   
   
-  ceshi() {
-    this.setData({
-      asd : true
+  async getEWM() {
+    wx.showLoading({
+      title: '加载中',
     })
-    wx.request({
-      url: `http://qr.liantu.com/api.php`,
-      data: {
-        text: '18602005866'
-      },
-      responseType: 'arraybuffer',
-      success: (res) => {
-        console.log(res)
-        this.setData({
-          aaa: 'data:image/png;base64,' + wx.arrayBufferToBase64(res.data)
-        })
+    this.setData({
+      showImg : true
+    })
+    const userDetail = await WXAPI.userDetail(wx.getStorageSync('token')).then(function (res) {
+      // console.log(res)
+      if (res.code == 0) {
+        return res.data.base;
       }
     })
+    if(!userDetail.mobile) {
+      wx.showModal({
+        title: '温馨提示',
+        content: '您的手机号尚未绑定，是否到 ”我的“ 进行绑定',
+        confirmText: '去绑定',
+        cancelText: '暂不绑定',
+        success (res) {
+          if (res.confirm) {
+            // console.log('用户点击确定')
+            wx.switchTab({
+              url: '/pages/my/index'
+            })
+          } else if (res.cancel) {
+            // console.log('用户点击取消')
+            wx.showToast({
+              title: '部分功能无法使用',
+              icon: 'none',
+              duration: 2000
+            })
+          }
+        }
+      })
+      this.setData({
+        imageUrl : ''
+      })
+      return ;
+    }
+    this.qrcodeMessage('13865077006');
+
+    // wx.request({
+    //   url: `http://qr.liantu.com/api.php`,
+    //   data: {
+    //     text: userDetail.mobile
+    //   },
+    //   responseType: 'arraybuffer',
+    //   success: (res) => {
+    //     console.log(res)
+    //     this.setData({
+    //       imageUrl: 'data:image/png;base64,' + wx.arrayBufferToBase64(res.data)
+    //     })
+    //   }
+    // })
   },
-  
+   // 长按保存
+  //  save: function () {
+  //   console.log('save')
+  //   wx.showActionSheet({
+  //     itemList: ['保存图片'],
+  //     success: function (res) {
+  //       console.log(res.tapIndex)
+  //       if (res.tapIndex == 0) {
+  //         that.getAlbumScope()
+  //       }
+  //     }
+  //   })
+  // },
+
+  qrcodeMessage(data) {
+    //获取canvas对象
+    const ctx = wx.createCanvasContext('canvas')
+    const rate = wx.getSystemInfoSync().windowWidth / 750
+    console.log(ctx)
+    //二维码宽高
+    var qrcodeWidth = rate * 500
+    this.setData({
+      qrcodeWidth: qrcodeWidth
+    })
+
+    qrcode = new QRCode('canvas', {
+      usingIn: this,
+      width: qrcodeWidth,
+      height: qrcodeWidth,
+      colorDark: "#33CCFF",//前景颜色
+      colorLight: "white",//背景颜色
+      correctLevel: QRCode.CorrectLevel.H,
+    })
+    qrcode.makeCode(data)
+    wx.hideLoading()
+  },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (e) {
-    this.ceshi();
+    this.getEWM();
   },
 
   /**
@@ -97,10 +173,10 @@ Page({
   },
   tabClick: function (e) {
     if(e.currentTarget.dataset.id == 0) {
-      this.ceshi();
+      this.getEWM();
     } else {
       this.setData({
-        asd: false
+        showImg: false
       })
     }
     this.setData({
