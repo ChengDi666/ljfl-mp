@@ -27,7 +27,6 @@ Page({
       showImg : true
     })
     const userDetail = await WXAPI.userDetail(wx.getStorageSync('token')).then(function (res) {
-      // console.log(res)
       if (res.code == 0) {
         return res.data.base;
       }
@@ -59,7 +58,9 @@ Page({
       })
       return ;
     }
-    this.qrcodeMessage('13865077006');
+    setTimeout(() => {
+      this.qrcodeMessage(userDetail.mobile);
+    }, 200)
 
     // wx.request({
     //   url: `http://qr.liantu.com/api.php`,
@@ -89,11 +90,11 @@ Page({
   //   })
   // },
 
-  qrcodeMessage(data) {
+  async qrcodeMessage(data) {
     //获取canvas对象
     const ctx = wx.createCanvasContext('canvas')
     const rate = wx.getSystemInfoSync().windowWidth / 750
-    console.log(ctx)
+    
     //二维码宽高
     var qrcodeWidth = rate * 500
     this.setData({

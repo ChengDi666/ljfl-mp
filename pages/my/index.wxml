@@ -188,10 +188,10 @@
   <view class="line"></view>
 
   <view class="space"></view>
-  <view class="menu-item" bindtap="aboutUs">
+  <!-- <view class="menu-item" bindtap="aboutUs">
     <view class="l">关于我们</view>
     <image class="next" src="/images/icon/next.png"></image>
-  </view>
+  </view> -->
   <view class="line"></view>
   <view wx:if="{{userMobile}}" class="menu-item">
     <view class="l">绑定手机</view>
@@ -223,7 +223,7 @@
   </view> -->
   
   <view class="space"></view>
-  <view class="version">EastWorld v {{version}}</view>
+  <view class="version">Copyright © 2011-2019 Developer NorgeIT Inc.</view>
   <view class="space"></view>
 </view>
 

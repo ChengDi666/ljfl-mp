@@ -7,8 +7,8 @@ function Address(id) {
       header: {
         'content-type': 'application/json' // 默认值
       },
-        // console.log(res.data)
       success (res) {
+        // console.log(res.data)
         return resolve(res)
       }
     })
@@ -43,7 +43,7 @@ function queryUserOpenid(openid) {
         'content-type': 'application/json' // 默认值
       },
       success (res) {
-        console.log(res.data)
+        // console.log(res.data)
         return resolve(res.data)
       }
     })
@@ -65,7 +65,7 @@ function getUserMessage(userData) {
         'content-type': 'application/json' // 默认值
       },
       success (res) {
-        console.log(res.data)
+        // console.log(res.data)
         return resolve(res)
       }
     })
@@ -86,7 +86,7 @@ function amendCustomersAddress(userData) {
         'content-type': 'application/json' // 默认值
       },
       success (res) {
-        console.log(res.data)
+        // console.log(res.data)
         return resolve(res)
       }
     })
@@ -94,33 +94,10 @@ function amendCustomersAddress(userData) {
 }
 
 
-function ceshi(userData) {
-  return new Promise((resolve, reject) => {
-    wx.request({
-      // url: `https://api.it120.cc/norgeit/user/apiExtUserScoreLog/save`,
-      url: `https://user.api.it120.cc/user/apiExtUserScoreLog/save`,
-      data: {
-        score: userData.score,
-        mobile: userData.phonenumber
-      },
-      method: 'POST',
-      header: {
-        'content-type': 'application/json', // 默认值
-        'X-Token': `${userData.token}`
-      },
-      success (res) {
-        console.log(res)
-        // return resolve(res)
-      }
-    })
-  });
-}
-
 module.exports = {
   address: Address,
   AddressRange: AddressRange,
   getUserMessage: getUserMessage,
   queryUserOpenid: queryUserOpenid,
-  ceshi: ceshi,
   amendCustomersAddress: amendCustomersAddress
 }

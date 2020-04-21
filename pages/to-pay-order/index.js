@@ -39,7 +39,7 @@ Page({
     })
   },
   switch1Change(e) {
-    console.log(e.detail.value)
+    // console.log(e.detail.value)
     this.setData({
       switchChecked: e.detail.value
     })
@@ -59,12 +59,12 @@ Page({
       this.data.kjId = buyNowInfoMem.kjId;
       if (buyNowInfoMem && buyNowInfoMem.shopList) {
         shopList = buyNowInfoMem.shopList
-        console.log(shopList)
+        // console.log(shopList)
       }
     } else {
       //购物车下单
       const res = await WXAPI.shippingCarInfo(token)
-      console.log(res)
+      // console.log(res)
       if (res.code == 0) {
         shopList = res.data.items
       }
@@ -79,7 +79,6 @@ Page({
 
   onLoad(e) {
     WXAPI.userAmount(wx.getStorageSync('token')).then((res) => {
-      console.log(res)
       if (res.code == 0) {
         this.setData({
           user_score: res.data.score
@@ -171,7 +170,6 @@ Page({
     }
 
     WXAPI.orderCreate(postData).then(function (res) {
-      console.log(res)
       if (res.code != 0) {
         wx.showModal({
           title: '错误',

@@ -76,7 +76,7 @@ Page({
       recommendStatus: 1
     }).then(res => {
       if (res.code === 0){
-        console.log(res.data)  // 获取爆品推荐商品详情
+        // console.log(res.data)  // 获取爆品推荐商品详情
         that.setData({
           goodsRecommend: res.data
         })
@@ -238,11 +238,11 @@ Page({
       if (goodsKanjiaSetRes.code == 0) {
         res.data.forEach(ele => {
           const _process = goodsKanjiaSetRes.data.find(_set => {
-            console.log(_set)
+            // console.log(_set)
             return _set.goodsId == ele.id
           })
-          console.log(ele)
-          console.log(_process)
+          // console.log(ele)
+          // console.log(_process)
           if (_process) {
             ele.process = 100 * _process.numberBuy / _process.number
           }

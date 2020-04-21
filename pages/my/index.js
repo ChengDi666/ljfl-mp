@@ -51,22 +51,18 @@ Page({
       url: '/pages/my/index'
     })
   },
-  async ceshi(data) {
-    console.log(data)
-    const a = await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    console.log(a)
-    const b = await Add.queryUserOpenid(a.data.openid);
-    console.log(b)
-    if(b.length == 0) {
+  async registerCustomer(data) {
+    const customerOpenid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    const isRegister = await Add.queryUserOpenid(customerOpenid.data.openid);
+    if(isRegister.length == 0) {
       Add.getUserMessage({
         nickname: data.nick,
         phonenumber: data.mobile,
-        openid: a.data.openid
+        openid: customerOpenid.data.openid
       });
     }
   },
   getPhoneNumber: function(e) {
-    console.log(e)
     if (!e.detail.errMsg || e.detail.errMsg != "getPhoneNumber:ok") {
       wx.showModal({
         title: '提示',
@@ -76,7 +72,6 @@ Page({
       return;
     }
     WXAPI.bindMobileWxa(wx.getStorageSync('token'), e.detail.encryptedData, e.detail.iv).then(res => {
-      console.log(res)
       if (res.code === 10002) {
         this.setData({
           wxlogin: false
@@ -90,8 +85,7 @@ Page({
           duration: 2000
         })
         this.getUserApiInfo('true').then((res) => {
-          // console.log(res.base)
-          this.ceshi(res.base);
+          this.registerCustomer(res.base);
         });
       } else {
         wx.showModal({
@@ -105,7 +99,6 @@ Page({
   getUserApiInfo: function (isReturn) {
     var that = this;
     return WXAPI.userDetail(wx.getStorageSync('token')).then(function (res) {
-      console.log(res)
       if (res.code == 0) {
         let _data = {}
         _data.apiUserInfoMap = res.data
@@ -116,7 +109,6 @@ Page({
           _data.canHX = true // 具有扫码核销的权限
         }
         that.setData(_data);
-        console.log(_data)
         if(isReturn) {
           return res.data;
         }
@@ -126,7 +118,6 @@ Page({
   getUserAmount: function () {
     var that = this;
     WXAPI.userAmount(wx.getStorageSync('token')).then(function (res) {
-      console.log(res)
       if (res.code == 0) {
         that.setData({
           balance: res.data.balance.toFixed(2),
@@ -163,7 +154,6 @@ Page({
     })
   },
   processLogin(e) {
-    console.log(e)
     if (!e.detail.userInfo) {
       wx.showToast({
         title: '已取消',

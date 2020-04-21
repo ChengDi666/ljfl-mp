@@ -30,18 +30,14 @@ shiyan(e) {
     wx.showLoading({
       title: '加载中',
     })
-    // console.log(e)
     // 地图发生变化的时候，获取中间点，也就是用户选择的位置toFixed
     if (e.type == 'end' && (e.causedBy == 'scale' || e.causedBy == 'drag')) {
-      // console.log(e)
       var that = this;
       this.mapCtx = wx.createMapContext("map4select");
       this.mapCtx.getCenterLocation({
         type: 'gcj02',
         success: (res) => {
-          console.log(res)
           Add.AddressRange(res.latitude, res.longitude).then((result) => {
-            console.log(result);
             if(result.statusCode == 500) { return }
             const list = result.data.map((item) => {
               item.checked = false;
@@ -103,16 +99,15 @@ shiyan(e) {
         this.setData({
           sel_showModal:false
         })
-        console.log(this.data.checkedAdd)
-        const aa = this.qingqiu(this.data.checkedAdd.id).then((res) => {
-          console.log(res)
+        // console.log(this.data.checkedAdd)
+        this.qingqiu(this.data.checkedAdd.id).then((res) => {
+          // console.log(res)
           this.data.xiaoquAdd[0] = res;
           this.data.xiaoquAdd[1] = [{name:'请选择'}];
           this.setData({
             xiaoquAdd: this.data.xiaoquAdd
           })
         });
-        console.log(aa)
         return ;
       }
       wx.showToast({
@@ -128,9 +123,8 @@ shiyan(e) {
       wx.showLoading({
         title: '加载中',
       })
-      // console.log(e)
-      console.log(this.data.value)
-      console.log(e.detail.value)
+      // console.log(this.data.value)
+      // console.log(e.detail.value)
       let valueCheng = {
         column: '',
         row: ''
@@ -138,7 +132,6 @@ shiyan(e) {
       let isChange = false;
       this.data.value = e.detail.value.map((item, index) => {
         if(isChange) {
-          console.log(index)
           return 0;
         }
         if(item != this.data.value[index]) {
@@ -150,13 +143,9 @@ shiyan(e) {
         }
         return item;
       });
-      console.log(this.data.value)
       this.setData({
         value: this.data.value
       })
-      // const a = e.detail.value[0]
-      // console.log(a)
-      // console.log(this.data.addressList[0][a])
       const addId = this.data.xiaoquAdd[valueCheng.column][valueCheng.row].id;
       const delNum = this.data.xiaoquAdd.length - (valueCheng.column + 1);
       if(addId == 0) {
@@ -167,12 +156,10 @@ shiyan(e) {
           xiaoquAdd: this.data.xiaoquAdd
         })
         wx.hideLoading()
-        console.log(this.data.xiaoquAdd)
-        console.log(this.data.value)
         return ;
       }
       this.qingqiu(addId).then((res) => {
-        console.log(res)
+        // console.log(res)
         if(res.length < 1) {
           this.data.xiaoquAdd.splice(valueCheng.column + 1, delNum);
           this.data.value.splice(valueCheng.column + 1, delNum);
@@ -181,8 +168,6 @@ shiyan(e) {
             xiaoquAdd: this.data.xiaoquAdd
           })
           wx.hideLoading()
-          console.log(this.data.xiaoquAdd)
-          console.log(this.data.value)
           if(!this.data.xiaoquAdd[this.data.xiaoquAdd.length - 1][1].hasChildren) {
             //  最后一列数据，且没有子地址
           }
@@ -198,10 +183,10 @@ shiyan(e) {
         wx.hideLoading()
       })
       this.data.longAddress = this.data.longAddress.split(' ');
-      console.log(this.data.xiaoquAdd)
+      // console.log(this.data.xiaoquAdd)
       this.data.longAddress[valueCheng.column] = this.data.xiaoquAdd[valueCheng.column][valueCheng.row].name
       this.data.add_id = this.data.xiaoquAdd[this.data.xiaoquAdd.length-1][valueCheng.row]
-      console.log(this.data.add_id)
+      // console.log(this.data.add_id)
       this.setData({
         longAddress: this.data.longAddress.join(' ')
       })
@@ -216,7 +201,6 @@ shiyan(e) {
           id: 0,
           name: '请选择'
         }].concat(res.data)
-        console.log(res);
         return newData;
       });
     },
@@ -227,7 +211,7 @@ shiyan(e) {
 
 
   radioChange: function (e) {
-    console.log(e.detail.value)
+    // console.log(e.detail.value)
     var checked = e.detail.value
     var changed = {}
     for (var i = 0; i < this.data.addressList.length; i++) {
@@ -273,15 +257,13 @@ shiyan(e) {
         this.setData({
           showModal:false
         })
-        console.log(this.data.checkedAdd)
-        const aa = this.qingqiu(this.data.checkedAdd.id).then((res) => {
-          console.log(res)
+        this.qingqiu(this.data.checkedAdd.id).then((res) => {
+          // console.log(res)
           this.data.xiaoquAdd[0] = res;
           this.setData({
             xiaoquAdd: this.data.xiaoquAdd
           })
         });
-        console.log(aa)
         return ;
       }
       wx.showToast({
@@ -295,10 +277,9 @@ shiyan(e) {
 
 
 async bindSave(e) {
-  console.log(e)
+  // console.log(e)
   const uid = await Add.queryUserOpenid(this.data.user_openid)
   uid[0].addresses = [this.data.add_id]
-  console.log(uid)
   this.shiyan({
     address: this.data.add_id,
     id: uid[0].id
@@ -314,16 +295,14 @@ async bindSave(e) {
   let c_id
   const username = this.data.checkedAdd.fullname + '.' + this.data.longAddress
   const userAddressArr = username.split('.');
-  console.log(userAddressArr)
   const a = userAddressArr;
   a.splice(0,2);
   const shortAddress = a.join('.');
-  console.log(shortAddress)
   if(userAddressArr[0]) {
     this.data.provinces.map((item) => {
       if(item.name == userAddressArr[0]) {
         p_id = item.id
-        console.log(item)
+        // console.log(item)
       }
     })
   }
@@ -331,7 +310,7 @@ async bindSave(e) {
   cities.data.map((item) => {
     if(item.name == userAddressArr[1]) {
       c_id = item.id
-      console.log(item)
+      // console.log(item)
     }
   })
   if (shortAddress == "") {
@@ -376,7 +355,6 @@ async bindSave(e) {
   async onReady () {
     //  通过本地存储的token 获取Openid
     const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    console.log(a)
     this.setData({
       user_openid: a.data.openid
     })
@@ -387,29 +365,17 @@ async bindSave(e) {
         icon: 'none'
       })
     }
-    console.log(b)
     this.setData({
       mobile: b.data.base.mobile,
       nick: b.data.base.nick
     })
-    
-  console.log({
-    nickname: this.data.nick,
-    mobile: this.data.mobile,
-    openid: this.data.user_openid
-  })
-  Add.ceshi({
-    score: '10',
-    phonenumber: this.data.mobile,
-    token: wx.getStorageSync('token')
-  });
     wx.getLocation({
       type: 'gcj02', //wgs84 返回 gps 坐标，gcj02 返回可用于 wx.openLocation 的坐标
       success: (res) => {
         this.data.latitude = res.latitude
         this.data.longitude = res.longitude
         Add.AddressRange(res.latitude, res.longitude).then((result) => {
-          console.log(result);
+          // console.log(result);
           if(result.statusCode == 500) { return }
           const list = result.data.map((item) => {
             item.checked = false;
@@ -429,7 +395,6 @@ async bindSave(e) {
             height: 50
           }],
         })
-        console.log(res)
         // wx.openLocation({
         //   latitude: res.latitude,
         //   longitude: res.longitude,
@@ -437,7 +402,7 @@ async bindSave(e) {
       }      
     })
     WXAPI.province().then((res) => {
-      console.log(res)
+      // console.log(res)
       this.setData({
         provinces: res.data
       })
@@ -452,7 +417,7 @@ async onLoad(e) {
 
   if (e.id) { // 修改初始化数据库数据
     const res = await WXAPI.addressDetail(wx.getStorageSync('token'), e.id)
-    console.log(res)
+    // console.log(res)
     if (res.code == 0) {
       this.setData({
         id: e.id,
