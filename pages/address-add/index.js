@@ -28,10 +28,10 @@ shiyan(e) {
   
   regionchange(e) {
     wx.showLoading({
-      title: '加载中',
+      title: '地址加载中',
     })
     // 地图发生变化的时候，获取中间点，也就是用户选择的位置toFixed
-    if (e.type == 'end' && (e.causedBy == 'scale' || e.causedBy == 'drag')) {
+    if (e.type == 'end' && (e.causedBy == 'scale' || e.causedBy == 'drag' || e.causedBy == 'update')) {
       var that = this;
       this.mapCtx = wx.createMapContext("map4select");
       this.mapCtx.getCenterLocation({
@@ -60,6 +60,11 @@ shiyan(e) {
             }],
           })
         }
+      })
+    } else {
+      wx.showToast({
+        title: '地址加载错误!',
+        icon: 'none'
       })
     }
 },
@@ -295,12 +300,13 @@ async bindSave(e) {
   let c_id
   const username = this.data.checkedAdd.fullname + '.' + this.data.longAddress
   const userAddressArr = username.split('.');
-  const a = userAddressArr;
-  a.splice(0,2);
-  const shortAddress = a.join('.');
-  if(userAddressArr[0]) {
+  const provincesName = userAddressArr[0];
+  const citiesName = userAddressArr[1];
+  userAddressArr.splice(0,2);
+  const shortAddress = userAddressArr.join('.');
+  if(provincesName) {
     this.data.provinces.map((item) => {
-      if(item.name == userAddressArr[0]) {
+      if(item.name == provincesName) {
         p_id = item.id
         // console.log(item)
       }
@@ -308,7 +314,7 @@ async bindSave(e) {
   }
   const cities = await WXAPI.nextRegion(p_id);
   cities.data.map((item) => {
-    if(item.name == userAddressArr[1]) {
+    if(item.name == citiesName) {
       c_id = item.id
       // console.log(item)
     }
@@ -375,7 +381,7 @@ async bindSave(e) {
         this.data.latitude = res.latitude
         this.data.longitude = res.longitude
         Add.AddressRange(res.latitude, res.longitude).then((result) => {
-          // console.log(result);
+          console.log(result);
           if(result.statusCode == 500) { return }
           const list = result.data.map((item) => {
             item.checked = false;
@@ -402,7 +408,7 @@ async bindSave(e) {
       }      
     })
     WXAPI.province().then((res) => {
-      // console.log(res)
+      console.log(res)
       this.setData({
         provinces: res.data
       })
