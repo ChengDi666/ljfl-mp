@@ -111,13 +111,6 @@ Page({
     } else {
       _data.banners = res1.data
     }
-    // 读取首页广告位
-    const res2 = await WXAPI.banners({
-      type: 'indexAD'
-    })
-    if (res2.code == 0) {
-      _data.adInfo = res2.data[0]
-    }
     this.setData(_data)
   },
   onShow: function(e){
@@ -125,7 +118,16 @@ Page({
       shopInfo: wx.getStorageSync('shopInfo')
     })
     // 获取购物车数据，显示TabBarBadge
-    TOOLS.showTabBarBadge();
+    TOOLS.showTabBarBadge()
+    this.goodsDynamic()
+  },
+  async goodsDynamic(){
+    const res = await WXAPI.goodsDynamic(0)
+    if (res.code == 0) {
+      this.setData({
+        goodsDynamic: res.data
+      })
+    }
   },
   async categories(){
     const res = await WXAPI.goodsCategory()
