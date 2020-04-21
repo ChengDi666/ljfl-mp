@@ -95,7 +95,7 @@ module.exports =
 /* eslint-disable */
 // 小程序开发api接口工具包，https://github.com/gooking/wxapi
 var API_BASE_URL = 'https://api.it120.cc';
-var subDomain = 'tz';
+var subDomain = '-';
 
 var request = function request(url, needSubDomain, method, data) {
   var _url = API_BASE_URL + (needSubDomain ? '/' + subDomain : '') + url;
@@ -785,6 +785,9 @@ module.exports = {
   modifyUserInfo: function modifyUserInfo(data) {
     return request('/user/modify', true, 'post', data);
   },
+  modifyUserPassword: function modifyUserPassword(token, pwdOld, pwdNew) {
+    return request('/user/modify/password', true, 'post', { token: token, pwdOld: pwdOld, pwdNew: pwdNew });
+  },
   uniqueId: function uniqueId() {
     var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
 
@@ -1020,6 +1023,9 @@ module.exports = {
   },
   siteStatistics: function siteStatistics() {
     return request('/site/statistics', true, 'get');
+  },
+  goodsDynamic: function goodsDynamic(type) {
+    return request('/site/goods/dynamic', true, 'get', { type: type });
   },
   fetchSubDomainByWxappAppid: function fetchSubDomainByWxappAppid(appid) {
     return request('/subdomain/appid/wxapp', false, 'get', { appid: appid });
