@@ -319,7 +319,7 @@ async bindSave(e) {
   a.splice(0,2);
   const shortAddress = a.join('.');
   console.log(shortAddress)
-  if(str) {
+  if(userAddressArr[0]) {
     this.data.provinces.map((item) => {
       if(item.name == userAddressArr[0]) {
         p_id = item.id

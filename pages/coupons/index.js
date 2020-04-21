@@ -104,7 +104,8 @@ Page({
       usingIn: this,
       width: qrcodeWidth,
       height: qrcodeWidth,
-      colorDark: "#33CCFF",//前景颜色
+      colorDark: "#000000",//前景颜色
+      // colorDark: "#33CCFF",//前景颜色-蓝色
       colorLight: "white",//背景颜色
       correctLevel: QRCode.CorrectLevel.H,
     })
