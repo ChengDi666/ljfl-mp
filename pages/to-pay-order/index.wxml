@@ -74,7 +74,7 @@
       <view class="row-label">我的积分</view>
       <view class="right-text">{{user_score}}</view>
     </view>
-    <view class="row-box">
+    <view class="row-box" wx:if="{{user_score < totalScoreToPay}}" >
       <view class="row-label">是否使用金钱补足：</view>
       <switch checked="{{switchChecked}}" bindchange="switch1Change"/>
     </view>
@@ -101,7 +101,7 @@
   <view class="jiesuan-box safeAreaOldPaddingBttom safeAreaNewPaddingBttom">
     <view class="left-price">
       <view class="total" wx:if="{{switchChecked}}">合计： 积分 {{user_score}} + ¥ {{(totalScoreToPay - user_score)/100}}</view>
-      <view class="total" wx:if="{{!switchChecked}}">合计： 积分 {{user_score - totalScoreToPay}}</view>
+      <view class="total" wx:if="{{!switchChecked}}">合计： 积分 {{totalScoreToPay}}<text wx:if="{{yunPrice > 0}}"> + ¥ {{yunPrice}}</text></view>
     </view>
     <button class="to-pay-btn" bindtap="goCreateOrder">提交订单</button>
   </view>
