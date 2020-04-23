@@ -100,7 +100,7 @@
 
   <view class="jiesuan-box safeAreaOldPaddingBttom safeAreaNewPaddingBttom">
     <view class="left-price">
-      <view class="total" wx:if="{{switchChecked}}">合计： 积分 {{user_score}} + ¥ {{(totalScoreToPay - user_score)/100}}</view>
+      <view class="total" wx:if="{{switchChecked}}">合计： 积分 {{user_score}} + ¥ {{(totalScoreToPay - user_score)/100}}<text wx:if="{{yunPrice > 0}}"> + {{yunPrice}}</text></view>
       <view class="total" wx:if="{{!switchChecked}}">合计： 积分 {{totalScoreToPay}}<text wx:if="{{yunPrice > 0}}"> + ¥ {{yunPrice}}</text></view>
     </view>
     <button class="to-pay-btn" bindtap="goCreateOrder">提交订单</button>

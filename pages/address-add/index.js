@@ -10,7 +10,6 @@ Page({
     checkedAdd: {},
     longAddress: '请选择',
     xiaoquAdd: [],
-    xiaoquIndex: [0,0],
 
     markers: [],
 
@@ -21,8 +20,19 @@ Page({
   },
 
 
-shiyan(e) {
-  Add.amendCustomersAddress(e);
+async CustomersAddress() {
+  const uid = await Add.queryUserOpenid(this.data.user_openid)
+  // console.log(uid)
+  if(uid[0].addresses[0].id == this.data.add_id.id) {
+    return true;
+  }
+  uid[0].addresses.push(this.data.add_id)
+  console.log(uid[0].addresses)
+  Add.amendCustomersAddress({
+    address: uid[0].addresses,
+    id: uid[0].id
+  });
+  return false;
 },
 
   
@@ -64,7 +74,8 @@ shiyan(e) {
     } else {
       wx.showToast({
         title: '地址加载错误!',
-        icon: 'none'
+        icon: 'none',
+        mask: true
       })
     }
 },
@@ -93,30 +104,30 @@ shiyan(e) {
       setTimeout(() => {
         this.setData({
           sel_showModal: false,
-          // checkedAdd: {},
-          // addressList: []
+          value: [0],
+          longAddress: '请选择',
         })
       }, 500);
     },
     // -选择器
     sel_haode() {
-      if(this.data.checkedAdd.checked) {
+      let isShow = true;
+      if(this.data.value) {
+        this.data.value.map((item) => {
+          //  如果选择的是“请选择”
+          if(item == 0) {
+            isShow = false
+          }
+        })
+      }
+      if(this.data.checkedAdd.checked && isShow) {
         this.setData({
           sel_showModal:false
         })
-        // console.log(this.data.checkedAdd)
-        this.qingqiu(this.data.checkedAdd.id).then((res) => {
-          // console.log(res)
-          this.data.xiaoquAdd[0] = res;
-          this.data.xiaoquAdd[1] = [{name:'请选择'}];
-          this.setData({
-            xiaoquAdd: this.data.xiaoquAdd
-          })
-        });
         return ;
       }
       wx.showToast({
-        title: '请选择地址',
+        title: '请选择具体地址',
         icon: 'none',
         duration: 2000,
         mask: true
@@ -127,6 +138,7 @@ shiyan(e) {
       //  值变动
       wx.showLoading({
         title: '加载中',
+        mask: true
       })
       // console.log(this.data.value)
       // console.log(e.detail.value)
@@ -151,9 +163,11 @@ shiyan(e) {
       this.setData({
         value: this.data.value
       })
+      //  获取被选择的ID
       const addId = this.data.xiaoquAdd[valueCheng.column][valueCheng.row].id;
       const delNum = this.data.xiaoquAdd.length - (valueCheng.column + 1);
       if(addId == 0) {
+        //  如果被选择的是“请选择”,删除后面的列
         this.data.xiaoquAdd.splice(valueCheng.column + 1, delNum);
         this.data.value.splice(valueCheng.column + 1, delNum);
         this.setData({
@@ -236,7 +250,9 @@ shiyan(e) {
     // 外面的弹窗
     btn () {
       this.setData({
-        showModal:true
+        showModal:true,
+        value: [0],
+        longAddress: '请选择',
       })
     },
    
@@ -259,16 +275,16 @@ shiyan(e) {
 
     haode() {
       if(this.data.checkedAdd.checked) {
-        this.setData({
-          showModal:false
-        })
         this.qingqiu(this.data.checkedAdd.id).then((res) => {
           // console.log(res)
-          this.data.xiaoquAdd[0] = res;
+          this.data.xiaoquAdd = [res];
           this.setData({
             xiaoquAdd: this.data.xiaoquAdd
           })
         });
+        this.setData({
+          showModal:false
+        })
         return ;
       }
       wx.showToast({
@@ -282,17 +298,19 @@ shiyan(e) {
 
 
 async bindSave(e) {
-  // console.log(e)
-  const uid = await Add.queryUserOpenid(this.data.user_openid)
-  uid[0].addresses = [this.data.add_id]
-  this.shiyan({
-    address: this.data.add_id,
-    id: uid[0].id
-  })
+  if(await this.CustomersAddress()) {
+    //  地址已存在
+    wx.showToast({
+      title: '地址已存在',
+      icon: 'none'
+    })
+    return ;
+  }
   if (!this.data.checkedAdd.id) {
     wx.showToast({
       title: '请选择地址',
-      icon: 'none'
+      icon: 'none',
+      mask: true
     })
     return
   }
@@ -322,7 +340,8 @@ async bindSave(e) {
   if (shortAddress == "") {
     wx.showToast({
       title: '请填写详细地址',
-      icon: 'none'
+      icon: 'none',
+      mask: true
     })
     return
   }
@@ -331,7 +350,7 @@ async bindSave(e) {
     linkMan: this.data.nick,
     address: shortAddress,
     mobile: this.data.mobile,
-    isDefault: 'true',
+    // isDefault: 'true', //  是否为默认地址
     provinceId: p_id,
     cityId: c_id
   }

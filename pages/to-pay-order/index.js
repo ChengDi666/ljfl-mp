@@ -130,14 +130,35 @@ Page({
   },
   createOrder: function (e) {
     var that = this;
+    if(that.data.user_score < that.data.totalScoreToPay && !that.data.switchChecked) {
+      console.log(that.data.user_score)
+      console.log(that.data.totalScoreToPay)
+      wx.showModal({
+        title: '温馨提示',
+        content: '您的积分不足，是否使用金钱补足？',
+        success (res) {
+          if (res.confirm) {
+            that.setData({
+              switchChecked: true
+            })
+          } else if (res.cancel) {
+          }
+        }
+      })
+    }
     var loginToken = wx.getStorageSync('token') // 用户登录 token
     var remark = this.data.remark; // 备注信息
-
+    let my_score = this.data.totalScoreToPay;
+    if(this.data.user_score < this.data.totalScoreToPay) {
+      my_score = this.data.user_score
+    }
+    console.log(my_score)
     let postData = {
       token: loginToken,
       goodsJsonStr: that.data.goodsJsonStr,
       remark: remark,
-      peisongType: that.data.peisongType
+      peisongType: that.data.peisongType,
+      deductionScore: my_score   // 用多少积分来抵扣本次交易
     };
     if (that.data.kjId) {
       postData.kjid = that.data.kjId
@@ -172,8 +193,9 @@ Page({
     if (!e) {
       postData.calculate = "true";
     }
-
+    console.log(postData)
     WXAPI.orderCreate(postData).then(function (res) {
+      console.log(res)
       if (res.code != 0) {
         wx.showModal({
           title: '错误',
