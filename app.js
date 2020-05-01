@@ -3,7 +3,7 @@ const CONFIG = require('config.js')
 const AUTH = require('utils/auth')
 App({
   onLaunch: function() {
-    WXAPI.init(CONFIG.subDomain) // 从根目录的 config.js 文件中读取
+    WXAPI.init(CONFIG.subDomain)
     const that = this;
     // 检测新版本
     const updateManager = wx.getUpdateManager()
@@ -139,10 +139,63 @@ App({
         AUTH.login()
       }
     })
+    WXAPI.queryConfigBatch('mallName,WITHDRAW_MIN,ALLOW_SELF_COLLECTION,order_hx_uids,subscribe_ids,share_profile').then(res => {
+      if (res.code == 0) {
+        res.data.forEach(config => {
+          wx.setStorageSync(config.key, config.value);
+        })
+        if (this.configLoadOK) {
+          this.configLoadOK()
+        }
+      }
+    })
+  },
+    
+  onShow (e) {
+    this.globalData.launchOption = e
+    // 保存邀请人
+    if (e && e.query && e.query.inviter_id) {
+      wx.setStorageSync('referrer', e.query.inviter_id)
+      if (e.shareTicket) {
+        wx.getShareInfo({
+          shareTicket: e.shareTicket,
+          success: res => {
+            console.log(res)
+            console.log({
+              referrer: e.query.inviter_id,
+              encryptedData: res.encryptedData,
+              iv: res.iv
+            })
+            wx.login({
+              success(loginRes) {
+                if (loginRes.code) {
+                  WXAPI.shareGroupGetScore(
+                    loginRes.code,
+                    e.query.inviter_id,
+                    res.encryptedData,
+                    res.iv
+                  ).then(_res => {
+                    console.log(_res)
+                  }).catch(err => {
+                    console.error(err)
+                  })
+                } else {
+                  console.error('登录失败！' + loginRes.errMsg)
+                }
+              }
+            })
+          }
+        })
+      }
+    }
+    // 自动登录
+    AUTH.checkHasLogined().then(isLogined => {
+      if (!isLogined) {
+        AUTH.login()
+      }
+    })
   },
   globalData: {                
-    isConnected: true,
-    launchOption: undefined,
-    vipLevel: 0
+    isConnected: true
   }
 })
