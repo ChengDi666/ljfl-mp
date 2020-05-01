@@ -54,11 +54,16 @@ Page({
   async registerCustomer(data) {
     const customerOpenid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
     const isRegister = await Add.queryUserOpenid(customerOpenid.data.openid);
-    if(isRegister.length == 0) {
+    // console.log(isRegister)
+    if(isRegister.data.length == 0) {
       Add.getUserMessage({
         nickname: data.nick,
         phonenumber: data.mobile,
         openid: customerOpenid.data.openid
+      }).then((res) => {
+        if(res.data) {
+
+        }
       });
     }
   },

@@ -131,8 +131,6 @@ Page({
   createOrder: function (e) {
     var that = this;
     if(that.data.user_score < that.data.totalScoreToPay && !that.data.switchChecked) {
-      console.log(that.data.user_score)
-      console.log(that.data.totalScoreToPay)
       wx.showModal({
         title: '温馨提示',
         content: '您的积分不足，是否使用金钱补足？',
@@ -152,7 +150,7 @@ Page({
     if(this.data.user_score < this.data.totalScoreToPay) {
       my_score = this.data.user_score
     }
-    console.log(my_score)
+    // console.log(my_score)
     let postData = {
       token: loginToken,
       goodsJsonStr: that.data.goodsJsonStr,
@@ -193,9 +191,9 @@ Page({
     if (!e) {
       postData.calculate = "true";
     }
-    console.log(postData)
+    // console.log(postData)
     WXAPI.orderCreate(postData).then(function (res) {
-      console.log(res)
+      // console.log(res)
       if (res.code != 0) {
         wx.showModal({
           title: '错误',

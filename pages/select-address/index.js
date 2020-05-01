@@ -82,7 +82,7 @@ Page({
             wx.navigateBack({})
           })
         } else {
-          console.log('用户点击取消')
+          // console.log('用户点击取消')
         }
       }
     })

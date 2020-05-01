@@ -94,7 +94,7 @@ Page({
     })
   },
   search(event){
-    console.log('search')
+    // console.log('search')
     this.setData({
       searchValue: event.detail.value
     })

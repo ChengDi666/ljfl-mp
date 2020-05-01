@@ -114,10 +114,10 @@ Page({
           res.encryptedData,
           res.iv
         ).then(_res => {
-          console.log(_res)
+          // console.log(_res)
           this.routePage()
         }).catch(err => {
-          console.error(err)
+          // console.error(err)
           this.routePage()
         })
       },

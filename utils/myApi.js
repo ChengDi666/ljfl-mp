@@ -1,8 +1,11 @@
+// const urls = 'https://api.jssrxx.com/api'
+const urls = 'https://api.lvfen.site/v1'
+
 function Address(id) {
-  let asdd = [];
+  //  当前地址的下级地址
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `https://api.jssrxx.com/api/addresses/${id}/children`,
+      url: `${urls}/addresses/${id}/children`,
       data: {},
       header: {
         'content-type': 'application/json' // 默认值
@@ -16,11 +19,14 @@ function Address(id) {
 }
 
 
-function AddressRange(lat, lon) {
+function AddressRange(lat, lng) {
+  //  获取区域内的地址信息
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `https://api.jssrxx.com/api/addresses/search?lat=${lat}&lng=${lon}`,
-      data: {},
+      url: `${urls}/addresses/position?position={"lat": "${lat}", "lng": "${lng}"}`,
+      // data: {
+      //   position: {lat:lat,lng:lng}
+      // },
       header: {
         'content-type': 'application/json' // 默认值
       },
@@ -33,11 +39,12 @@ function AddressRange(lat, lon) {
 }
 
 function queryUserOpenid(openid) {
+  //  通过Openid查询用户是否存在
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `https://api.jssrxx.com/api/customers/search`,
+      url: `${urls}/customers`,
       data: {
-        openid: openid
+        search: openid
       },
       header: {
         'content-type': 'application/json' // 默认值
@@ -51,10 +58,10 @@ function queryUserOpenid(openid) {
 }
 
 function getUserMessage(userData) {
-  //  注册
+  //  客户注册
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `https://api.jssrxx.com/api/customers`,
+      url: `${urls}/customers`,
       data: {
         nickname: userData.nickname,
         openid: userData.openid,
@@ -77,9 +84,9 @@ function amendCustomersAddress(userData) {
   //  客户添加地址
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `https://api.jssrxx.com/api/customers/${userData.id}`,
+      url: `${urls}/customers/${userData.id}`,
       data: {
-        addresses: [userData.address]
+        addresses: userData.address
       },
       method: 'PUT',
       header: {

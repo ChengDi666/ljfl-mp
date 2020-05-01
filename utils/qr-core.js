@@ -1062,7 +1062,7 @@ var QRCode;
     if (!callback) {
       return
     }
-    console.log('width : ' + this._htOption.width + ' height : ' + this._htOption.height + ' canvasId : ' + this.canvasId)
+    // console.log('width : ' + this._htOption.width + ' height : ' + this._htOption.height + ' canvasId : ' + this.canvasId)
     wx.canvasToTempFilePath({
       x: 0,
       y: 0,
@@ -1072,11 +1072,11 @@ var QRCode;
       destHeight: this._htOption.height,
       canvasId: this.canvasId,
       success: function(res) {
-        console.log('wx.canvasToTempFilePath success res.tempFilePath : ' + res.tempFilePath)
+        // console.log('wx.canvasToTempFilePath success res.tempFilePath : ' + res.tempFilePath)
         callback(res.tempFilePath)
       },
       fail: function(res) {
-        console.log('wx.canvasToTempFilePath fail ', res)
+        // console.log('wx.canvasToTempFilePath fail ', res)
       }
     }, obj)
   }

@@ -99,7 +99,7 @@ Page({
   async getGoodsDetailAndKanjieInfo(goodsId) {
     const that = this;
     const goodsDetailRes = await WXAPI.goodsDetail(goodsId)
-    console.log(goodsDetailRes)
+    // console.log(goodsDetailRes)
     const goodsKanjiaSetRes = await WXAPI.kanjiaSet(goodsId)
     if (goodsDetailRes.code == 0) {
       var selectSizeTemp = SelectSizePrefix;
@@ -369,7 +369,7 @@ Page({
   buyNow: function(e) {
     let that = this
     let shoptype = e.currentTarget.dataset.shoptype
-    console.log(shoptype)
+    // console.log(shoptype)
     if (this.data.goodsDetail.properties && !this.data.canSubmit) {
       if (!this.data.canSubmit) {
         wx.showModal({
@@ -733,7 +733,7 @@ Page({
     });
   },
   onPosterSuccess(e) {
-    console.log('success:', e)
+    // console.log('success:', e)
     this.setData({
       posterImg: e.detail,
       showposterImg: true

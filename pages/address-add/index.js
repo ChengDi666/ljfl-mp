@@ -23,14 +23,15 @@ Page({
 async CustomersAddress() {
   const uid = await Add.queryUserOpenid(this.data.user_openid)
   // console.log(uid)
-  if(uid[0].addresses[0].id == this.data.add_id.id) {
-    return true;
-  }
-  uid[0].addresses.push(this.data.add_id)
-  console.log(uid[0].addresses)
+  // if(uid.length != 0) { return true;}
+  // if(uid.data[0].addresses.data[0].id == this.data.add_id.id) {
+  //   return true;
+  // }
+  uid.data[0].addresses.data.push(this.data.add_id)
+  // console.log(uid.data[0].addresses)
   Add.amendCustomersAddress({
-    address: uid[0].addresses,
-    id: uid[0].id
+    address: uid.data[0].addresses,
+    id: uid.data[0].id
   });
   return false;
 },
@@ -48,15 +49,31 @@ async CustomersAddress() {
         type: 'gcj02',
         success: (res) => {
           Add.AddressRange(res.latitude, res.longitude).then((result) => {
-            if(result.statusCode == 500) { return }
-            const list = result.data.map((item) => {
+            // console.log(result)
+            if(result.statusCode != 200 || result.data.data.length == 0) { 
+              wx.hideLoading();       
+              wx.showToast({
+                title: '网络不稳定,请重试!',
+                icon: 'none',
+                mask: true
+              })
+              setTimeout(() => {
+                that.setData({
+                  showModal: false,
+                  checkedAdd: {},
+                  addressList: []
+                })
+              }, 1000);
+              return 
+            }
+            var list = result.data.data.map((item) => {
               item.checked = false;
               return item
             })
-            wx.hideLoading()
             this.setData({
               addressList: list
             });
+            wx.hideLoading()
           });
           that.setData({
             // latitude: res.latitude,
@@ -155,7 +172,7 @@ async CustomersAddress() {
           isChange = true
           valueCheng.column = index;
           valueCheng.row = item;
-          console.log('第' + valueCheng.column + '列,第' + valueCheng.row + '行,变了')
+          // console.log('第' + valueCheng.column + '列,第' + valueCheng.row + '行,变了')
           return item;
         }
         return item;
@@ -213,13 +230,14 @@ async CustomersAddress() {
 
     qingqiu(id) {
       return Add.address(id).then((res) => {
-        if(res.data.length < 1) {
-          return res.data;
+        // console.log(res)
+        if(res.data.data.length < 1) {
+          return res.data.data;
         }
         const newData = [{
           id: 0,
           name: '请选择'
-        }].concat(res.data)
+        }].concat(res.data.data)
         return newData;
       });
     },
@@ -239,7 +257,7 @@ async CustomersAddress() {
         this.setData({
           checkedAdd: this.data.addressList[i]
         })
-        console.log(this.data.checkedAdd)
+        // console.log(this.data.checkedAdd)
       } else {
         changed['addressList[' + i + '].checked'] = false
       }
@@ -316,7 +334,7 @@ async bindSave(e) {
   }
   let p_id
   let c_id
-  const username = this.data.checkedAdd.fullname + '.' + this.data.longAddress
+  const username = this.data.checkedAdd.parent_name + '.' + this.data.longAddress
   const userAddressArr = username.split('.');
   const provincesName = userAddressArr[0];
   const citiesName = userAddressArr[1];
@@ -400,9 +418,9 @@ async bindSave(e) {
         this.data.latitude = res.latitude
         this.data.longitude = res.longitude
         Add.AddressRange(res.latitude, res.longitude).then((result) => {
-          console.log(result);
-          if(result.statusCode == 500) { return }
-          const list = result.data.map((item) => {
+          // console.log(result);
+          if(result.statusCode != 200 || result.data.data.length == 0) { return }
+          const list = result.data.data.map((item) => {
             item.checked = false;
             return item
           })
@@ -427,7 +445,7 @@ async bindSave(e) {
       }      
     })
     WXAPI.province().then((res) => {
-      console.log(res)
+      // console.log(res)
       this.setData({
         provinces: res.data
       })
@@ -471,7 +489,7 @@ deleteAddress: function (e) {
           wx.navigateBack({})
         })
       } else {
-        console.log('用户点击取消')
+        // console.log('用户点击取消')
       }
     }
   })
