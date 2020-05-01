@@ -22,17 +22,23 @@ Page({
 
 async CustomersAddress() {
   const uid = await Add.queryUserOpenid(this.data.user_openid)
-  // console.log(uid)
-  // if(uid.length != 0) { return true;}
+  console.log(uid)
+  if(uid.data.length == 0) {
+    uid.data[0].addresses.data.map((item) => {
+      if (item.id == this.data.add_id.id) {
+
+      }
+    });
+  }
   // if(uid.data[0].addresses.data[0].id == this.data.add_id.id) {
   //   return true;
   // }
   uid.data[0].addresses.data.push(this.data.add_id)
   // console.log(uid.data[0].addresses)
-  Add.amendCustomersAddress({
-    address: uid.data[0].addresses,
-    id: uid.data[0].id
-  });
+  // Add.amendCustomersAddress({
+  //   address: uid.data[0].addresses,
+  //   id: uid.data[0].id
+  // });
   return false;
 },
 
@@ -324,6 +330,7 @@ async bindSave(e) {
     })
     return ;
   }
+  return ;
   if (!this.data.checkedAdd.id) {
     wx.showToast({
       title: '请选择地址',
