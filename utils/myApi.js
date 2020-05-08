@@ -1,5 +1,3 @@
-// const urls = 'https://api.jssrxx.com/api'
-// const urls = 'https://api.lvfen.site/v1'
 const urls = require('../config');
 
 function Address(id) {
@@ -43,7 +41,7 @@ function queryUserOpenid(openid) {
   //  通过Openid查询用户是否存在
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls}/customers`,
+      url: `${urls.myLink}/customers`,
       data: {
         search: openid,
         include : 'addresses'
@@ -63,7 +61,7 @@ function getUserMessage(userData) {
   //  客户注册
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls}/customers`,
+      url: `${urls.myLink}/customers`,
       data: {
         nickname: userData.nickname,
         openid: userData.openid,
@@ -86,7 +84,7 @@ function amendCustomersAddress(userData) {
   //  客户修改地址
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls}/customers/${userData.id}`,
+      url: `${urls.myLink}/customers/${userData.id}`,
       data: {
         addresses: userData.address
       },
