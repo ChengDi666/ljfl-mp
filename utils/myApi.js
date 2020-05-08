@@ -1,11 +1,12 @@
 // const urls = 'https://api.jssrxx.com/api'
-const urls = 'https://api.lvfen.site/v1'
+// const urls = 'https://api.lvfen.site/v1'
+const urls = require('../config');
 
 function Address(id) {
   //  当前地址的下级地址
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls}/addresses/${id}/children`,
+      url: `${urls.myLink}/addresses/${id}/children`,
       data: {},
       header: {
         'content-type': 'application/json' // 默认值
@@ -23,7 +24,7 @@ function AddressRange(lat, lng) {
   //  获取区域内的地址信息
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls}/addresses/position?position={"lat": "${lat}", "lng": "${lng}"}`,
+      url: `${urls.myLink}/addresses/position?position={"lat": "${lat}", "lng": "${lng}"}`,
       // data: {
       //   position: {lat:lat,lng:lng}
       // },
@@ -44,7 +45,8 @@ function queryUserOpenid(openid) {
     wx.request({
       url: `${urls}/customers`,
       data: {
-        search: openid
+        search: openid,
+        include : 'addresses'
       },
       header: {
         'content-type': 'application/json' // 默认值
@@ -81,7 +83,7 @@ function getUserMessage(userData) {
 
 
 function amendCustomersAddress(userData) {
-  //  客户添加地址
+  //  客户修改地址
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${urls}/customers/${userData.id}`,
