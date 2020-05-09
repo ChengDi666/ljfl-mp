@@ -44,57 +44,29 @@ Page({
       this.data.peisongType = 'kd'
     }
     let shopList = [];
-    let scoreAll = 0;
-    let priceAll = 0;
     const token = wx.getStorageSync('token')
     //立即购买下单
     if ("buyNow" == this.data.orderType) {
       var buyNowInfoMem = wx.getStorageSync('buyNowInfo');
-      console.log(buyNowInfoMem)
       this.data.kjId = buyNowInfoMem.kjId;
       if (buyNowInfoMem && buyNowInfoMem.shopList) {
         shopList = buyNowInfoMem.shopList
-        scoreAll = buyNowInfoMem.shopList[0].score * buyNowInfoMem.shopList[0].number;
-        priceAll = buyNowInfoMem.shopList[0].price * buyNowInfoMem.shopList[0].number;
         // console.log(shopList)
       }
     } else {
       //购物车下单
       const res = await WXAPI.shippingCarInfo(token)
-      res.data = this.countPrice(res.data)
-      console.log(res)
       if (res.code == 0) {
         shopList = res.data.items
-        scoreAll = res.data.score;
-        priceAll = res.data.price;
       }
     }
     this.setData({
       goodsList: shopList,
-      countScore: scoreAll,  //  积分总计
-      countPrice: priceAll,  //  积分总计
       allowSelfCollection: allowSelfCollection,
       peisongType: this.data.peisongType
     });
     this.initShippingAddress()
   },
-  countPrice(e) {
-    console.log(this.data.user_score)
-    var prices = 0;
-    let scores = 0;
-    e.items.map((item) => {
-      if(item.score == 0) {
-        scores += item.price * this.data.scoreRatio;
-      } else {
-        prices += item.price;
-        scores += item.score;
-      }
-    })
-    e.price = prices;
-    e.score = scores;
-    return e;
-  },
-
   onLoad(e) {
     this.setData({
       scoreRatio: wx.getStorageSync('scoreRatio')
@@ -153,17 +125,11 @@ Page({
     var that = this;
     var loginToken = wx.getStorageSync('token') // 用户登录 token
     var remark = this.data.remark; // 备注信息
-    let my_score = this.data.user_score;
-    if(this.data.countScore < this.data.user_score) {
-      my_score = this.data.countScore
-    }
-    console.log(my_score)
     let postData = {
       token: loginToken,
       goodsJsonStr: that.data.goodsJsonStr,
       remark: remark,
       peisongType: that.data.peisongType,
-      deductionScore: my_score   // 用多少积分来抵扣本次交易
     };
     if (that.data.kjId) {
       postData.kjid = that.data.kjId
@@ -198,9 +164,19 @@ Page({
     if (!e) {
       postData.calculate = "true";
     }
-    console.log(postData)
+    if(e) {
+      // 用多少积分来抵扣本次交易
+      postData.deductionScore = this.data.user_score - this.data.totalScoreToPay;
+      if(this.data.totalScoreToPay > this.data.user_score) {
+        wx.showToast({
+          title: '积分不足',
+          icon: 'none'
+        })
+        return false;
+      }
+    }
+    // console.log(postData)
     WXAPI.orderCreate(postData).then(function (res) {
-      console.log(res)
       if (res.code != 0) {
         wx.showModal({
           title: '错误',

@@ -41,7 +41,8 @@ function wxpay(type, money, orderId, redirectUrl, data) {
         fail: function (aaa) {
           console.error(aaa)
           wx.showToast({
-            title: '支付失败:' + aaa
+            title: '支付失败:' + aaa,
+            icon: 'none'
           })
         },
         success: function () {

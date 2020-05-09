@@ -1,5 +1,6 @@
 const WXAPI = require('apifm-wxapi')
 const AUTH = require('../../utils/auth')
+const Add = require('../../utils/myApi')
 
 const app = getApp()
 Page({
@@ -30,7 +31,12 @@ Page({
     })
   },
 
-  onLoad: function() {
+  onLoad: async function() {
+    const openidMessage =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    const user = await Add.queryUserOpenid(openidMessage.data.openid)
+    this.setData({
+      customers: user.data[0]
+    })
   },
   onShow: function() {
     AUTH.checkHasLogined().then(isLogined => {
@@ -70,22 +76,36 @@ Page({
     })
   },
 
-  deleteAddress: function (e) {
+  deleteAddress (e) {
     const id = e.currentTarget.dataset.id;
-    // console.log(e)
     wx.showModal({
       title: '提示',
       content: '确定要删除该收货地址吗？',
-      success: function (res) {
+      success: async (res) => {
         if (res.confirm) {
+          //  获取详细地址信息
+          const AddressMessage = await WXAPI.addressDetail(wx.getStorageSync('token'), id)
+          this.setCustomers(AddressMessage.data.extJson.myAddressId);
           WXAPI.deleteAddress(wx.getStorageSync('token'), id).then(function () {
             wx.navigateBack({})
-          })
+          });
         } else {
           // console.log('用户点击取消')
         }
       }
     })
   },
+
+
+  setCustomers(id) {
+    //  删除后更新地址
+    const arr = this.data.customers.addresses.data.map((item) => {
+      if(id != item.id) { return item;}
+    }).filter(item => item);
+    Add.amendCustomersAddress({
+      address: {data: arr},
+      id: this.data.customers.id
+    });
+  }
 
 })

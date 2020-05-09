@@ -84,8 +84,8 @@
       <view class="goods-title">{{item.name}}</view>
       <view style='display:flex;'>
         <view>
-          <view wx:if="{{!item.minScore && item.minScore == 0}}" class="goods-price">¥ {{item.minPrice}} / {{item.minPrice * scoreRatio}} 积分</view>
-          <view wx:if="{{item.minScore && item.minScore != 0}}" class="goods-price">¥ {{item.minPrice}} + {{item.minScore}} 积分</view>
+          <view wx:if="{{item.minScore == 0}}" class="goods-price">¥ {{item.minPrice}}</view>
+          <view wx:if="{{item.minScore != 0}}" class="goods-price">¥ {{item.minPrice}} + {{item.minScore}} 积分</view>
         </view>
         <!-- <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;'>积分: {{item.minScore}}</view> -->
       </view>
@@ -153,8 +153,8 @@
       <view class="goods-title">{{item.name}}</view>
       <view style='display:flex;'>
         <view>
-          <view wx:if="{{item.minScore && item.minScore == 0}}" class="goods-price">¥ {{item.minPrice}} / {{item.minPrice * scoreRatio}} 积分</view>
-          <view wx:if="{{item.minScore && item.minScore > 0}}" class="goods-price">¥ {{item.minPrice}} + {{item.minScore}} 积分</view>
+          <view wx:if="{{item.minScore == 0}}" class="goods-price">¥ {{item.minPrice}}</view>
+          <view wx:if="{{item.minScore > 0}}" class="goods-price">¥ {{item.minPrice}} + {{item.minScore}} 积分</view>
         </view>
         <!-- <view wx:if="{{item.originalPrice && item.originalPrice > 0}}" class="goods-price" style='color:#aaa;'>积分: {{item.minScore}}</view> -->
       </view>

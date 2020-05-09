@@ -23,19 +23,28 @@ Page({
 async CustomersAddress() {
   let isTrue = false;
   const uid = await Add.queryUserOpenid(this.data.user_openid)
-  // console.log(uid)
+  let  addMessage;
+  addMessage = uid.data[0].addresses;
   if(uid.data.length != 0) {
-    uid.data[0].addresses.data.map((item) => {
-      if (item.id == this.data.add_id.id) {
-        isTrue = true;
-      }
-    });
+    if(!addMessage) { //  没有地址信息
+      addMessage = { data: [this.data.add_id] };
+      Add.amendCustomersAddress({
+        address: addMessage,
+        id: uid.data[0].id
+      });
+      return isTrue;
+    } else {
+      addMessage.data.map((item) => {
+        if (item.id == this.data.add_id.id) {
+          isTrue = true;
+        }
+      });
+    }
   }
   if(!isTrue) {
-    uid.data[0].addresses.data.push(this.data.add_id)
-    // console.log(uid.data[0].addresses)
+    addMessage.data.push(this.data.add_id)
     Add.amendCustomersAddress({
-      address: uid.data[0].addresses,
+      address: addMessage,
       id: uid.data[0].id
     });
   }
@@ -376,7 +385,8 @@ async bindSave(e) {
     mobile: this.data.mobile,
     // isDefault: 'true', //  是否为默认地址
     provinceId: p_id,
-    cityId: c_id
+    cityId: c_id,
+    extJsonStr: JSON.stringify({ myAddressId: this.data.add_id.id}),  //  附加信息
   }
   let apiResult
   if (this.data.id) {

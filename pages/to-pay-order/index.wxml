@@ -8,8 +8,8 @@
       <view class="text-box">
         <view class="arow arow01">
           <view class="goods-name">{{item.name}}</view>
-          <view wx:if="{{!item.score && item.score == 0}}" class="goods-price" style="white-space: nowrap;">¥ {{item.price}} / {{item.price * scoreRatio}} 积分</view>
-          <view wx:if="{{item.score && item.score != 0}}" class="goods-price" style="white-space: nowrap;">¥ {{item.price}} + {{item.score}} 积分</view>
+          <view wx:if="{{item.score == 0}}" class="goods-price" style="white-space: nowrap;">¥ {{item.price}}</view>
+          <view wx:if="{{item.score != 0}}" class="goods-price" style="white-space: nowrap;">¥ {{item.price}} + {{item.score}} 积分</view>
           <!-- <view style="text-align: right;" class="goods-price">¥ {{item.price}} + {{item.score}} 积分<view style="font-size: 23rpx">¥ {{item.price}} </view></view> -->
         </view>
         <view class="arow">
@@ -80,8 +80,8 @@
 
   <view class="goods-info">
     <view class="row-box">
-      <view class="row-label">商品</view>
-      <view class="right-text">¥ {{countPrice}} + {{countScore}} 积分</view>
+      <view class="row-label">商品金额</view>
+      <view class="right-text">¥ {{allGoodsPrice}}</view>
     </view>
     <view class="row-box" wx:if="{{isNeedLogistics > 0}}">
       <view class="row-label">运费</view>
@@ -95,8 +95,7 @@
 
   <view class="jiesuan-box safeAreaOldPaddingBttom safeAreaNewPaddingBttom">
     <view class="left-price">
-      <view wx:if="{{countScore <= user_score}}" class="total">合计：¥ {{countPrice}} +  积分 {{countScore}}<text wx:if="{{yunPrice > 0}}"> + {{yunPrice}}</text></view>
-      <view wx:if="{{countScore > user_score}}" class="total">合计：¥ {{countPrice + (countScore - user_score) / 100}} +  积分 {{user_score}}<text wx:if="{{yunPrice > 0}}"> + {{yunPrice}}</text></view>
+      <view class="total">合计：¥ {{(allGoodsAndYunPrice*100 - youhuijine*100)/100}} + {{totalScoreToPay}} 积分</view>
     </view>
     <button class="to-pay-btn" bindtap="goCreateOrder">提交订单</button>
   </view>

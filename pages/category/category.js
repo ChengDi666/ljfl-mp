@@ -25,9 +25,6 @@ Page({
     wx.showShareMenu({
       withShareTicket: true
     })
-    this.setData({
-      scoreRatio: wx.getStorageSync('scoreRatio')
-    })
     this.categories();
   },
   async categories() {

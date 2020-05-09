@@ -68,14 +68,6 @@ Page({
     })
   },
   onLoad(e) {
-    WXAPI.scoreDeductionRules(0).then((res) => {
-      //  获取第一个兑换规则
-      const ratio = res.data[0].score / res.data[0].money;
-      this.setData({
-        scoreRatio: ratio
-      });
-      wx.setStorageSync('scoreRatio', ratio)
-    })
     wx.showShareMenu({
       withShareTicket: true
     })    

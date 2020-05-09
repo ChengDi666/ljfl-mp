@@ -28,9 +28,6 @@ Page({
   },
   async onLoad(e) {
     // e.id = 235853
-    this.setData({
-      scoreRatio: wx.getStorageSync('scoreRatio')
-    })
     if (e && e.scene) {
       const scene = decodeURIComponent(e.scene) // 处理扫码进商品详情页面的逻辑
       if (scene && scene.split(',').length >= 2) {
