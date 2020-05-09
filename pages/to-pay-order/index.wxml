@@ -8,7 +8,9 @@
       <view class="text-box">
         <view class="arow arow01">
           <view class="goods-name">{{item.name}}</view>
-          <view style="text-align: right;" class="goods-price">积分: {{item.score}}<view style="font-size: 23rpx">¥ {{item.price}} </view></view>
+          <view wx:if="{{!item.score && item.score == 0}}" class="goods-price" style="white-space: nowrap;">¥ {{item.price}} / {{item.price * scoreRatio}} 积分</view>
+          <view wx:if="{{item.score && item.score != 0}}" class="goods-price" style="white-space: nowrap;">¥ {{item.price}} + {{item.score}} 积分</view>
+          <!-- <view style="text-align: right;" class="goods-price">¥ {{item.price}} + {{item.score}} 积分<view style="font-size: 23rpx">¥ {{item.price}} </view></view> -->
         </view>
         <view class="arow">
           <view class="goods-label">
@@ -74,19 +76,12 @@
       <view class="row-label">我的积分</view>
       <view class="right-text">{{user_score}}</view>
     </view>
-    <view class="row-box" wx:if="{{user_score < totalScoreToPay}}" >
-      <view class="row-label">是否使用金钱补足：</view>
-      <switch checked="{{switchChecked}}" bindchange="switch1Change"/>
-    </view>
   </view>
 
   <view class="goods-info">
     <view class="row-box">
       <view class="row-label">商品</view>
-      <view class="right-text" wx:if="{{switchChecked}}">积分：{{totalScoreToPay - user_score}} = ¥ {{(user_score - totalScoreToPay)*(-1)/100}}
-        <view style="font-size: 21rpx; color: #999;">100 积分 = 1 元人民币</view>
-      </view>
-      <view class="right-text" wx:if="{{!switchChecked}}">积分： {{totalScoreToPay}}</view>
+      <view class="right-text">¥ {{countPrice}} + {{countScore}} 积分</view>
     </view>
     <view class="row-box" wx:if="{{isNeedLogistics > 0}}">
       <view class="row-label">运费</view>
@@ -100,8 +95,8 @@
 
   <view class="jiesuan-box safeAreaOldPaddingBttom safeAreaNewPaddingBttom">
     <view class="left-price">
-      <view class="total" wx:if="{{switchChecked}}">合计： 积分 {{user_score}} + ¥ {{(totalScoreToPay - user_score)/100}}<text wx:if="{{yunPrice > 0}}"> + {{yunPrice}}</text></view>
-      <view class="total" wx:if="{{!switchChecked}}">合计： 积分 {{totalScoreToPay}}<text wx:if="{{yunPrice > 0}}"> + ¥ {{yunPrice}}</text></view>
+      <view wx:if="{{countScore <= user_score}}" class="total">合计：¥ {{countPrice}} +  积分 {{countScore}}<text wx:if="{{yunPrice > 0}}"> + {{yunPrice}}</text></view>
+      <view wx:if="{{countScore > user_score}}" class="total">合计：¥ {{countPrice + (countScore - user_score) / 100}} +  积分 {{user_score}}<text wx:if="{{yunPrice > 0}}"> + {{yunPrice}}</text></view>
     </view>
     <button class="to-pay-btn" bindtap="goCreateOrder">提交订单</button>
   </view>

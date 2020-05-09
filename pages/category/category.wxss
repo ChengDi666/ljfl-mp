@@ -140,7 +140,7 @@ page,view,image,input {
 .goods-container .goods .soldInfo .good-price-box .price {
   color: #d81e06;
   margin-top: 10rpx;
-  width: 120rpx;
+  max-width: 300rpx;
   font-size: 28rpx;
   font-weight: bold;
   line-height: 40rpx;

@@ -52,6 +52,8 @@ Page({
       _data.categoryId = this.data.categoryId
     }
     const res = await WXAPI.goods(_data)
+    console.log(_data)
+    console.log(res)
     wx.hideLoading()
     if (res.code == 0) {
       this.setData({

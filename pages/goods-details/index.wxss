@@ -85,6 +85,9 @@ swiper-item image {
   display: flex;
   align-items:center;
 }
+.jiage{
+  font-size: 14pt !important;
+}
 .goods-profile .p{
    color:#e64340;
    font-size: 20pt;

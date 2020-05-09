@@ -26,7 +26,6 @@ Page({
     peisongType: 'kd', // 配送方式 kd,zq 分别表示快递/到店自取
     remark: '',
     user_score: 0,
-    switchChecked: false
   },
   onShow(){
     AUTH.checkHasLogined().then(isLogined => {
@@ -38,13 +37,6 @@ Page({
       }
     })
   },
-  switch1Change(e) {
-    // console.log(e.detail.value)
-    this.setData({
-      switchChecked: e.detail.value
-    })
-  },
-
   async doneShow() {
     let allowSelfCollection = wx.getStorageSync('ALLOW_SELF_COLLECTION')
     if (!allowSelfCollection || allowSelfCollection != '1') {
@@ -52,32 +44,61 @@ Page({
       this.data.peisongType = 'kd'
     }
     let shopList = [];
+    let scoreAll = 0;
+    let priceAll = 0;
     const token = wx.getStorageSync('token')
     //立即购买下单
     if ("buyNow" == this.data.orderType) {
       var buyNowInfoMem = wx.getStorageSync('buyNowInfo');
+      console.log(buyNowInfoMem)
       this.data.kjId = buyNowInfoMem.kjId;
       if (buyNowInfoMem && buyNowInfoMem.shopList) {
         shopList = buyNowInfoMem.shopList
+        scoreAll = buyNowInfoMem.shopList[0].score * buyNowInfoMem.shopList[0].number;
+        priceAll = buyNowInfoMem.shopList[0].price * buyNowInfoMem.shopList[0].number;
         // console.log(shopList)
       }
     } else {
       //购物车下单
       const res = await WXAPI.shippingCarInfo(token)
-      // console.log(res)
+      res.data = this.countPrice(res.data)
+      console.log(res)
       if (res.code == 0) {
         shopList = res.data.items
+        scoreAll = res.data.score;
+        priceAll = res.data.price;
       }
     }
     this.setData({
       goodsList: shopList,
+      countScore: scoreAll,  //  积分总计
+      countPrice: priceAll,  //  积分总计
       allowSelfCollection: allowSelfCollection,
       peisongType: this.data.peisongType
     });
     this.initShippingAddress()
   },
+  countPrice(e) {
+    console.log(this.data.user_score)
+    var prices = 0;
+    let scores = 0;
+    e.items.map((item) => {
+      if(item.score == 0) {
+        scores += item.price * this.data.scoreRatio;
+      } else {
+        prices += item.price;
+        scores += item.score;
+      }
+    })
+    e.price = prices;
+    e.score = scores;
+    return e;
+  },
 
   onLoad(e) {
+    this.setData({
+      scoreRatio: wx.getStorageSync('scoreRatio')
+    })
     WXAPI.userAmount(wx.getStorageSync('token')).then((res) => {
       if (res.code == 0) {
         this.setData({
@@ -128,29 +149,15 @@ Page({
       this.createOrder(true)
     }    
   },
-  createOrder: function (e) {
+  createOrder(e) {
     var that = this;
-    if(that.data.user_score < that.data.totalScoreToPay && !that.data.switchChecked) {
-      wx.showModal({
-        title: '温馨提示',
-        content: '您的积分不足，是否使用金钱补足？',
-        success (res) {
-          if (res.confirm) {
-            that.setData({
-              switchChecked: true
-            })
-          } else if (res.cancel) {
-          }
-        }
-      })
-    }
     var loginToken = wx.getStorageSync('token') // 用户登录 token
     var remark = this.data.remark; // 备注信息
-    let my_score = this.data.totalScoreToPay;
-    if(this.data.user_score < this.data.totalScoreToPay) {
-      my_score = this.data.user_score
+    let my_score = this.data.user_score;
+    if(this.data.countScore < this.data.user_score) {
+      my_score = this.data.countScore
     }
-    // console.log(my_score)
+    console.log(my_score)
     let postData = {
       token: loginToken,
       goodsJsonStr: that.data.goodsJsonStr,
@@ -191,9 +198,9 @@ Page({
     if (!e) {
       postData.calculate = "true";
     }
-    // console.log(postData)
+    console.log(postData)
     WXAPI.orderCreate(postData).then(function (res) {
-      // console.log(res)
+      console.log(res)
       if (res.code != 0) {
         wx.showModal({
           title: '错误',

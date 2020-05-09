@@ -49,6 +49,21 @@ Page({
       }
     })    
   },
+  countPrice(e) {
+    var prices = 0;
+    let scores = 0;
+    e.items.map((item) => {
+      if(item.score == 0) {
+        scores += item.price * e.scoreRatio;
+      } else {
+        prices += item.price;
+        scores += item.score;
+      }
+    })
+    e.price = prices;
+    e.score = scores;
+    return e;
+  },
   async shippingCarInfo(){
     const token = wx.getStorageSync('token')
     if (!token) {
@@ -56,6 +71,8 @@ Page({
     }
     const res = await WXAPI.shippingCarInfo(token)
     if (res.code == 0) {
+      res.data.scoreRatio = wx.getStorageSync('scoreRatio');
+      res.data = this.countPrice(res.data)
       this.setData({
         shippingCarInfo: res.data
       })
@@ -132,6 +149,7 @@ Page({
     }
   },
   async jiaBtnTap(e) {
+    console.log(e)
     const index = e.currentTarget.dataset.index;
     const item = this.data.shippingCarInfo.items[index]
     const number = item.number + 1

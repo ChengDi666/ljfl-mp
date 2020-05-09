@@ -192,6 +192,7 @@
 }
 .goods-box{
   width: 339rpx;
+  height: 502rpx;
   height: 472rpx;
   background-color: #fff;
   overflow: hidden;
