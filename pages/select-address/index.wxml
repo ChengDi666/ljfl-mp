@@ -9,15 +9,15 @@
           {{item.address}}
         </view>
       </view>
-      <view class="right-edit" bindtap="deleteAddress" data-id="{{item.id}}">
-        <!-- <image src="/images/icon/edit.svg"></image> -->
-        <image src="/images/icon/delete.svg"></image>
+      <view class="right-edit" bindtap="editAddess" data-id="{{item.id}}">
+        <image src="/images/icon/edit.svg"></image>
+        <!-- <image src="/images/icon/delete.svg"></image> -->
       </view>
     </view>
-    <view class="bottom-box" bindtap="addAddess">
+    <view class="bottom-box" bindtap="addAddess" wx:if="{{addressList.length == 0 || addressList == null}}">
       <view class="add-btn">
         <image src="/images/add-addr.png"></image>
-        <view>新增收货地址</view>
+        <view>绑定地址</view>
       </view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>

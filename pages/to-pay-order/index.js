@@ -149,10 +149,11 @@ Page({
       if (postData.peisongType == 'kd') {
         postData.provinceId = that.data.curAddressData.provinceId;
         postData.cityId = that.data.curAddressData.cityId;
-        if (that.data.curAddressData.districtId) {
+        if (that.data.curAddressData.districtId && that.data.addressExtJson.myAddressId) {
           postData.districtId = that.data.curAddressData.districtId;
         }
         postData.address = that.data.curAddressData.address;
+        postData.extJsonStr = JSON.stringify(that.data.addressExtJson);
         postData.linkMan = that.data.curAddressData.linkMan;
         postData.mobile = that.data.curAddressData.mobile;
         postData.code = that.data.curAddressData.code;
@@ -230,11 +231,13 @@ Page({
     const res = await WXAPI.defaultAddress(wx.getStorageSync('token'))
     if (res.code == 0) {
       this.setData({
-        curAddressData: res.data.info
+        curAddressData: res.data.info,
+        addressExtJson: res.data.extJson
       });
     } else {
       this.setData({
-        curAddressData: null
+        curAddressData: null,
+        addressExtJson: null
       });
     }
     this.processYunfei();

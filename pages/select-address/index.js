@@ -20,12 +20,15 @@ Page({
   },
 
   addAddess: function() {
-    wx.navigateTo({
-      url: "/pages/address-add/index"
-    })
+    if(this.data.addressList.length == 0 || this.data.addressList == null) {
+      wx.navigateTo({
+        url: "/pages/address-add/index"
+      })
+    }
   },
 
   editAddess: function(e) {
+    console.log(e)
     wx.navigateTo({
       url: "/pages/address-add/index?id=" + e.currentTarget.dataset.id
     })

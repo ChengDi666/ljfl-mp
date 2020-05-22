@@ -44,7 +44,7 @@ function queryUserOpenid(openid) {
       url: `${urls.myLink}/customers`,
       data: {
         search: openid,
-        include : 'addresses'
+        include : 'address'
       },
       header: {
         'content-type': 'application/json' // 默认值
@@ -64,6 +64,7 @@ function getUserMessage(userData) {
       url: `${urls.myLink}/customers`,
       data: {
         nickname: userData.nickname,
+        realname: userData.nickname,
         openid: userData.openid,
         phonenumber: userData.phonenumber
       },
@@ -86,7 +87,8 @@ function amendCustomersAddress(userData) {
     wx.request({
       url: `${urls.myLink}/customers/${userData.id}`,
       data: {
-        addresses: userData.address
+        // addresses: userData.address,
+        address_id: userData.address.data[0].id
       },
       method: 'PUT',
       header: {

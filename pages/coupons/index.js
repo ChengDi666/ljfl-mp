@@ -1,6 +1,7 @@
 const WXAPI = require('apifm-wxapi')
 const AUTH = require('../../utils/auth')
 var QRCode = require('../../utils/qr-core.js')
+const Add = require('../../utils/myApi')
 
 var qrcode = null;
 var sliderWidth = 96; // 需要设置slider的宽度，用于计算中间位置
@@ -58,8 +59,10 @@ Page({
       })
       return ;
     }
+    const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    const uid = await Add.queryUserOpenid(a.data.openid);
     setTimeout(() => {
-      this.qrcodeMessage(userDetail.mobile);
+      this.qrcodeMessage(uid.data[0].address.data.cardno);
     }, 200)
 
     // wx.request({

@@ -42,7 +42,7 @@ async CustomersAddress() {
     }
   }
   if(!isTrue) {
-    addMessage.data.push(this.data.add_id)
+    addMessage.data = this.data.add_id
     Add.amendCustomersAddress({
       address: addMessage,
       id: uid.data[0].id
@@ -280,7 +280,7 @@ async CustomersAddress() {
     this.setData(changed)
   },
 
-    // 外面的弹窗
+    // 地图选点
     btn () {
       this.setData({
         showModal:true,
@@ -472,11 +472,8 @@ async bindSave(e) {
   },
 
 async onLoad(e) {
-
-
   if (e.id) { // 修改初始化数据库数据
     const res = await WXAPI.addressDetail(wx.getStorageSync('token'), e.id)
-    // console.log(res)
     if (res.code == 0) {
       this.setData({
         id: e.id,
