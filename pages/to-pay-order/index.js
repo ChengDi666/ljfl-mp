@@ -167,7 +167,12 @@ Page({
     }
     if(e) {
       // 用多少积分来抵扣本次交易
-      postData.deductionScore = this.data.user_score - this.data.totalScoreToPay;
+      if(this.data.totalScoreToPay == 0) {
+        postData.deductionScore = this.data.totalScoreToPay
+      }
+      else{
+        postData.deductionScore = this.data.user_score - this.data.totalScoreToPay;
+      }
       if(this.data.totalScoreToPay > this.data.user_score) {
         wx.showToast({
           title: '积分不足',

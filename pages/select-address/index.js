@@ -9,18 +9,22 @@ Page({
   },
 
   selectTap: function(e) {
-    var id = e.currentTarget.dataset.id;
-    WXAPI.updateAddress({
-      token: wx.getStorageSync('token'),
-      id: id,
-      isDefault: 'true'
-    }).then(function(res) {
-      wx.navigateBack({})
+    wx.navigateTo({
+      url: "/pages/address-add/index"
     })
+    // var id = e.currentTarget.dataset.id;
+    // WXAPI.updateAddress({
+    //   token: wx.getStorageSync('token'),
+    //   id: id,
+    //   isDefault: 'true'
+    // }).then(function(res) {
+    //   wx.navigateBack({})
+    // })
   },
 
   addAddess: function() {
-    if(this.data.addressList.length == 0 || this.data.addressList == null) {
+    // console.log(this.data.addressList)
+    if(this.data.addressList == null || this.data.addressList.length == 0) {
       wx.navigateTo({
         url: "/pages/address-add/index"
       })
@@ -28,7 +32,7 @@ Page({
   },
 
   editAddess: function(e) {
-    console.log(e)
+    // console.log(e)
     wx.navigateTo({
       url: "/pages/address-add/index?id=" + e.currentTarget.dataset.id
     })

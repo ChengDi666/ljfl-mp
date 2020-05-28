@@ -22,27 +22,28 @@ Page({
 
 async CustomersAddress() {
   let isTrue = false;
-  const uid = await Add.queryUserOpenid(this.data.user_openid)
+  const uid = await Add.queryUserOpenid(this.data.user_openid, '')
+  console.log(uid)
   let  addMessage;
-  addMessage = uid.data[0].addresses;
-  if(uid.data.length != 0) {
-    if(!addMessage) { //  没有地址信息
-      addMessage = { data: [this.data.add_id] };
-      Add.amendCustomersAddress({
-        address: addMessage,
-        id: uid.data[0].id
-      });
-      return isTrue;
-    } else {
-      addMessage.data.map((item) => {
-        if (item.id == this.data.add_id.id) {
-          isTrue = true;
-        }
-      });
-    }
-  }
+  // addMessage = uid.data[0].addresses;
+  // if(uid.data.length != 0) {
+    // if(!addMessage) { //  没有地址信息
+    //   addMessage = { data: [this.data.add_id] };
+    //   Add.amendCustomersAddress({
+    //     address: addMessage,
+    //     id: uid.data[0].id
+    //   });
+    //   return isTrue;
+    // } else {
+    //   addMessage.data.map((item) => {
+    //     if (item.id == this.data.add_id.id) {
+    //       isTrue = true;
+    //     }
+    //   });
+    // }
+  // }
   if(!isTrue) {
-    addMessage.data = this.data.add_id
+    addMessage = { data: this.data.add_id};
     Add.amendCustomersAddress({
       address: addMessage,
       id: uid.data[0].id
@@ -421,8 +422,15 @@ async bindSave(e) {
     if(!b.data.base.mobile) {
       wx.showToast({
         title: '未绑定手机号',
-        icon: 'none'
+        icon: 'none',
+        duration: 2000,
+        mask: true
       })
+      setTimeout(() => {
+        wx.switchTab({
+          url: "/pages/my/index"
+        })
+      }, 1000);
     }
     this.setData({
       mobile: b.data.base.mobile,

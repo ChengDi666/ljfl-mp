@@ -37,21 +37,24 @@ function AddressRange(lat, lng) {
   });
 }
 
-function queryUserOpenid(openid) {
+function queryUserOpenid(openid, include) {
   //  通过Openid查询用户是否存在
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${urls.myLink}/customers`,
       data: {
         search: openid,
-        include : 'address'
+        include : include
       },
       header: {
         'content-type': 'application/json' // 默认值
       },
       success (res) {
-        // console.log(res.data)
+        // console.log(res)
         return resolve(res.data)
+      },
+      fail (err) {
+        console.log(err)
       }
     })
   });
