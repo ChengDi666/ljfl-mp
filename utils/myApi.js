@@ -91,7 +91,7 @@ function amendCustomersAddress(userData) {
       url: `${urls.myLink}/customers/${userData.id}`,
       data: {
         // addresses: userData.address,
-        address_id: userData.address.data[0].id
+        address_id: userData.address.data.id
       },
       method: 'PUT',
       header: {
