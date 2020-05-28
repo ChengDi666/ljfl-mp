@@ -60,7 +60,7 @@ Page({
       return ;
     }
     const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    const uid = await Add.queryUserOpenid(a.data.openid, '');
+    const uid = await Add.queryUserOpenid(a.data.openid, 'address');
     console.log(uid.data)
     if(uid.data == undefined || uid.data == null) {
       wx.hideLoading()
