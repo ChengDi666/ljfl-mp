@@ -66,8 +66,8 @@ Page({
             content: '是否去绑定地址，完善信息',
             success (res) {
               if (res.confirm) {
-                wx.reLaunch({
-                  url: 'pages/select-address/index'
+                wx.navigateTo({
+                  url: "/pages/select-address/index"
                 })
               } else if (res.cancel) {
                 // console.log('用户点击取消')
