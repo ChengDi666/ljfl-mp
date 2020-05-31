@@ -42,7 +42,7 @@ Page({
     const openidMessage =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
     const user = await Add.queryUserOpenid(openidMessage.data.openid)
     this.setData({
-      customers: user.data[0]
+      customers: user.customer
     })
   },
   onShow: function() {

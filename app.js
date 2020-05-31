@@ -160,7 +160,7 @@ App({
         wx.getShareInfo({
           shareTicket: e.shareTicket,
           success: res => {
-            console.log(res)
+            // console.log(res)
             console.log({
               referrer: e.query.inviter_id,
               encryptedData: res.encryptedData,

@@ -23,7 +23,7 @@ Page({
 async CustomersAddress() {
   let isTrue = false;
   const uid = await Add.queryUserOpenid(this.data.user_openid, '')
-  console.log(uid)
+  // console.log(uid)
   let  addMessage;
   // addMessage = uid.data[0].addresses;
   // if(uid.data.length != 0) {
@@ -46,7 +46,7 @@ async CustomersAddress() {
     addMessage = { data: this.data.add_id};
     Add.amendCustomersAddress({
       address: addMessage,
-      id: uid.data[0].id
+      id: uid.customer.id
     });
   }
   return isTrue;
@@ -350,12 +350,13 @@ async bindSave(e) {
   }
   let p_id
   let c_id
-  const username = this.data.checkedAdd.parent_name + '.' + this.data.longAddress
-  const userAddressArr = username.split('.');
-  const provincesName = userAddressArr[0];
-  const citiesName = userAddressArr[1];
-  userAddressArr.splice(0,2);
-  const shortAddress = userAddressArr.join('.');
+  const username = this.data.checkedAdd.parentname + ' ' + this.data.longAddress
+  const aid = username.indexOf('省');
+  const bid = username.indexOf('市');
+
+  const provincesName = username.substring(0,aid + 1);
+  const citiesName = username.substring(aid + 1,bid + 1);
+  const shortAddress = username.substring(bid + 1,username.length);
   if(provincesName) {
     this.data.provinces.map((item) => {
       if(item.name == provincesName) {

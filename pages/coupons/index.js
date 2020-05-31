@@ -60,34 +60,18 @@ Page({
       return ;
     }
     const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    const uid = await Add.queryUserOpenid(a.data.openid, 'address');
-    console.log(uid.data)
-    if(uid.data == undefined || uid.data == null) {
-      wx.hideLoading()
-      wx.showToast({
-        title: '网络延迟，请稍后重试',
-        icon: 'none'
-      })
-      setTimeout(() => {
-        wx.navigateBack({
-          delta: 1
-        })
-      }, 1000)
-    }
-    if(uid.data[0].address_id == null) {
+    const uid = await Add.getAddress(userDetail.mobile);
+    // console.log(uid)
+    if(uid.data == null) {
       wx.hideLoading()
       wx.showToast({
         title: '未绑定地址',
         icon: 'none'
       })
-      setTimeout(() => {
-        wx.navigateTo({
-          url: "/pages/select-address/index"
-        })
-      }, 1000)
     }
+    wx.hideLoading()
     setTimeout(() => {
-      this.qrcodeMessage(uid.data[0].address.data.cardno);
+      this.qrcodeMessage(uid.data.cardno);
     }, 200)
 
     // wx.request({
