@@ -348,30 +348,22 @@ async bindSave(e) {
     })
     return
   }
+  const addressName = await Add.getAddressName(this.data.add_id.id);
   let p_id
   let c_id
-  const username = this.data.checkedAdd.parentname + ' ' + this.data.longAddress
-  const aid = username.indexOf('省');
-  const bid = username.indexOf('市');
-
-  const provincesName = username.substring(0,aid + 1);
-  const citiesName = username.substring(aid + 1,bid + 1);
-  const shortAddress = username.substring(bid + 1,username.length);
-  if(provincesName) {
-    this.data.provinces.map((item) => {
-      if(item.name == provincesName) {
-        p_id = item.id
-        // console.log(item)
-      }
-    })
-  }
-  const cities = await WXAPI.nextRegion(p_id);
-  cities.data.map((item) => {
-    if(item.name == citiesName) {
-      c_id = item.id
-      // console.log(item)
+  await this.data.provinces.map((item) => {
+    if(item.name == addressName.data[0]) {
+      p_id = item.id
     }
   })
+  const cities = await WXAPI.nextRegion(p_id);
+  await cities.data.map((item) => {
+    if(item.name == addressName.data[1]) {
+      c_id = item.id
+    }
+  })
+  addressName.data.splice(0,2);
+  const shortAddress = addressName.data.join('.')
   if (shortAddress == "") {
     wx.showToast({
       title: '请填写详细地址',

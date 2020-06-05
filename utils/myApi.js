@@ -100,6 +100,25 @@ function getAddress(data) {
 }
 
 
+function getAddressName(id) {
+  //  通过手机获取地址信息
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${urls.myLink}/api/addresses/${id}/details`,
+      method: 'GET',
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success (res) {
+        // console.log(res)
+        return resolve(res.data)
+      }
+    })
+  });
+}
+
+
+
 function amendCustomersAddress(userData) {
   //  客户修改地址
   return new Promise((resolve, reject) => {
@@ -128,5 +147,6 @@ module.exports = {
   getUserMessage: getUserMessage,
   queryUserOpenid: queryUserOpenid,
   getAddress: getAddress,
+  getAddressName: getAddressName,
   amendCustomersAddress: amendCustomersAddress
 }

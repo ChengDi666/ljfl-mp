@@ -17,6 +17,12 @@ Page({
     rechargeOpen: false // 是否开启充值[预存]功能
   },
 	onLoad() {
+    WXAPI.province().then((res) => {
+      // console.log(res)
+      this.setData({
+        provinces: res.data
+      })
+    })
 	},	
   onShow() {
     const _this = this
@@ -51,6 +57,7 @@ Page({
     })
   },
   async registerCustomer(data) {
+    let isOk = true;
     const customerOpenid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
     const CustomerAddress = await Add.getAddress(data.mobile);
     const messages = {
@@ -60,12 +67,11 @@ Page({
     }
     if(CustomerAddress != 'no found') {
       messages.address_id = CustomerAddress.data.id;
+      isOk = await this.syncAddress(CustomerAddress.data, data.nick, data.mobile);
     }
-    // const isRegister = await Add.queryUserOpenid(customerOpenid.data.openid);
-    // console.log(isRegister)
     if(true) {
       Add.getUserMessage(messages).then((res) => {
-        if(CustomerAddress == 'no found') {
+        if(isOk) {
           wx.showModal({
             title: '温馨提示',
             content: '是否去绑定地址，完善信息',
@@ -82,6 +88,55 @@ Page({
         }
       });
     }
+  },
+  async syncAddress(data, nick, mobile) {
+    //  地址同步到商城
+    await this.delAllAddress();
+    const addressName = await Add.getAddressName(data.id);
+    // console.log(a);
+    let p_id;
+    let c_id;
+    if(addressName.data.length == 0) { 
+      //  地址名称分解接口有问题,需要绑定提示
+      return true; 
+    }
+    await this.data.provinces.map((item) => {
+      if(item.name == addressName.data[0]) {
+        p_id = item.id
+      }
+    })
+    const cities = await WXAPI.nextRegion(p_id);
+    await cities.data.map((item) => {
+      if(item.name == addressName.data[1]) {
+        c_id = item.id
+      }
+    })
+    addressName.data.splice(0,2);
+    const shortAddress = addressName.data.join('.')
+    const postData = {
+      token: wx.getStorageSync('token'),
+      linkMan: nick,
+      address: shortAddress,
+      mobile: mobile,
+      isDefault: 'true', //  是否为默认地址
+      provinceId: p_id,
+      cityId: c_id,
+      extJsonStr: JSON.stringify({ myAddressId: data.id}),  //  附加信息
+    }
+    // console.log(postData);
+    await WXAPI.addAddress(postData)
+    return false;
+  },
+  async delAllAddress() {
+    //  删除商城全部地址
+    WXAPI.queryAddress(wx.getStorageSync('token')).then(function(res) {
+      if (res.code == 0) {
+        res.data.map((item) => {
+          // console.log(item.id);
+          WXAPI.deleteAddress(wx.getStorageSync('token'), item.id);
+        });
+      }
+    })
   },
   getPhoneNumber: function(e) {
     if (!e.detail.errMsg || e.detail.errMsg != "getPhoneNumber:ok") {
