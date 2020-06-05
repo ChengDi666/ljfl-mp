@@ -66,7 +66,8 @@ function getUserMessage(userData) {
         nickname: userData.nickname,
         realname: userData.nickname,
         openid: userData.openid,
-        phonenumber: userData.phonenumber
+        phonenumber: userData.phonenumber,
+        address_id: userData.address_id
       },
       method: 'POST',
       header: {
@@ -91,7 +92,7 @@ function getAddress(data) {
         'content-type': 'application/json' // 默认值
       },
       success (res) {
-        // console.log(res.data)
+        console.log(res)
         return resolve(res.data)
       }
     })

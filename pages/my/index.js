@@ -52,15 +52,20 @@ Page({
   },
   async registerCustomer(data) {
     const customerOpenid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    const CustomerAddress = await Add.getAddress(data.mobile);
+    const messages = {
+      nickname: data.nick,
+      phonenumber: data.mobile,
+      openid: customerOpenid.data.openid
+    }
+    if(CustomerAddress != 'no found') {
+      messages.address_id = CustomerAddress.data.id;
+    }
     // const isRegister = await Add.queryUserOpenid(customerOpenid.data.openid);
     // console.log(isRegister)
     if(true) {
-      Add.getUserMessage({
-        nickname: data.nick,
-        phonenumber: data.mobile,
-        openid: customerOpenid.data.openid
-      }).then((res) => {
-        if(res.data) {
+      Add.getUserMessage(messages).then((res) => {
+        if(CustomerAddress == 'no found') {
           wx.showModal({
             title: '温馨提示',
             content: '是否去绑定地址，完善信息',
