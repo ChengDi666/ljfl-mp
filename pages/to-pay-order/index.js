@@ -37,6 +37,28 @@ Page({
       }
     })
   },
+  isMobile() {
+    return WXAPI.userDetail(wx.getStorageSync('token')).then((res) => {
+      console.log(res);
+      if(!res.data.base.mobile) {
+        //  没有绑定手机号
+        wx.showToast({
+          title: '未绑定手机号',
+          icon: 'none',
+          duration: 2000,
+          mask: true
+        })
+        // setTimeout(() => {
+        //   wx.switchTab({
+        //     url: "/pages/my/index"
+        //   })
+        // }, 1000);
+        return false;
+      } else {
+        return true;
+      }
+    });
+  },
   async doneShow() {
     let allowSelfCollection = wx.getStorageSync('ALLOW_SELF_COLLECTION')
     if (!allowSelfCollection || allowSelfCollection != '1') {
@@ -102,7 +124,12 @@ Page({
   remarkChange(e){
     this.data.remark = e.detail.value
   },
-  goCreateOrder(){
+  async goCreateOrder(){
+    const ismobiles = await this.isMobile();
+    if(!ismobiles) {
+      // console.log('没绑定手机号');
+      return ;
+    }
     const subscribe_ids = wx.getStorageSync('subscribe_ids')
     if (subscribe_ids) {
       wx.requestSubscribeMessage({

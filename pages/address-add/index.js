@@ -70,7 +70,7 @@ async CustomersAddress() {
               wx.hideLoading();       
               wx.showToast({
                 title: '网络不稳定,请重试!',
-                icon: 'none',
+                icon: 'none', 
                 mask: true
               })
               setTimeout(() => {
@@ -123,6 +123,14 @@ async CustomersAddress() {
     sel_btn () {
       this.setData({
         sel_showModal:true
+      }, () => {
+        console.log('有数据了');
+        setTimeout(() => {
+          wx.hideLoading();
+        }, 500);
+      })
+      wx.showLoading({
+        title: '加载中',
       })
     },
    
@@ -349,19 +357,33 @@ async bindSave(e) {
     return
   }
   const addressName = await Add.getAddressName(this.data.add_id.id);
-  let p_id
-  let c_id
+  let p_id;
+  let c_id;
   await this.data.provinces.map((item) => {
     if(item.name == addressName.data[0]) {
       p_id = item.id
     }
   })
+  if (p_id == undefined) {
+    wx.showToast({
+      title: '网络不稳，请稍后重试',
+      icon: 'none'
+    });
+    return ;
+  };
   const cities = await WXAPI.nextRegion(p_id);
   await cities.data.map((item) => {
     if(item.name == addressName.data[1]) {
       c_id = item.id
     }
   })
+  if (c_id == undefined) {
+    wx.showToast({
+      title: '网络不稳，请稍后重试',
+      icon: 'none'
+    });
+    return ;
+  };
   addressName.data.splice(0,2);
   const shortAddress = addressName.data.join('.')
   if (shortAddress == "") {

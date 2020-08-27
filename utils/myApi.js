@@ -31,18 +31,21 @@ function AddressRange(lat, lng) {
         'content-type': 'application/json' // 默认值
       },
       success (res) {
-        // console.log(res.data)
-        return resolve(res)
+        // console.log(res);
+        return resolve(res);
+      },
+      fail (err) {
+        return resolve(err);
       }
     })
   });
 }
 
-function queryUserOpenid(openid) {
+function queryUserOpenid(unionid) {
   //  通过Openid查询用户是否存在
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls.myLink}/api/customers/openid/${openid}`,
+      url: `${urls.myLink}/api/customers/unionid/${unionid}`,
       header: {
         'content-type': 'application/json' // 默认值
       },
@@ -65,9 +68,10 @@ function getUserMessage(userData) {
       data: {
         nickname: userData.nickname,
         realname: userData.nickname,
-        openid: userData.openid,
         phonenumber: userData.phonenumber,
-        address_id: userData.address_id
+        address_id: userData.address_id,
+        unionid: userData.unionid,
+        user_id: userData.user_id
       },
       method: 'POST',
       header: {
@@ -101,7 +105,7 @@ function getAddress(data) {
 
 
 function getAddressName(id) {
-  //  通过手机获取地址信息
+  //  通过 id 拆分地址
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${urls.myLink}/api/addresses/${id}/details`,

@@ -68,9 +68,9 @@ Page({
       }
     })
   },
-  initShippingAddress: function() {
+  initShippingAddress: function () {
     var that = this;
-    WXAPI.queryAddress(wx.getStorageSync('token')).then(function(res) {
+    WXAPI.queryAddress(wx.getStorageSync('token')).then(function (res) {
       if (res.code == 0) {
         that.setData({
           addressList: res.data
@@ -83,7 +83,7 @@ Page({
     })
   },
 
-  deleteAddress (e) {
+  deleteAddress(e) {
     const id = e.currentTarget.dataset.id;
     wx.showModal({
       title: '提示',
@@ -107,10 +107,10 @@ Page({
   setCustomers(id) {
     //  删除后更新地址
     const arr = this.data.customers.addresses.data.map((item) => {
-      if(id != item.id) { return item;}
+      if (id != item.id) { return item; }
     }).filter(item => item);
     Add.amendCustomersAddress({
-      address: {data: arr},
+      address: { data: arr },
       id: this.data.customers.id
     });
   }

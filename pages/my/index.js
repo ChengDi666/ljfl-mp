@@ -16,7 +16,13 @@ Page({
     score_sign_continuous:0,
     rechargeOpen: false // 是否开启充值[预存]功能
   },
-	onLoad() {
+	onLoad(options) {
+    // scene 需要使用 decodeURIComponent 才能获取到生成二维码时传入的 scene
+    //  扫推荐码进来
+    const scene = decodeURIComponent(options.scene);
+    if(scene != 'undefined') {
+      wx.setStorageSync('tuijian', scene);
+    }
     WXAPI.province().then((res) => {
       // console.log(res)
       this.setData({
@@ -57,13 +63,18 @@ Page({
     })
   },
   async registerCustomer(data) {
+    //  绑定手机时调用
+    const myuser_id = wx.getStorageSync('tuijian');
     let isOk = true;
-    const customerOpenid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    const customerUnionid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
     const CustomerAddress = await Add.getAddress(data.mobile);
     const messages = {
       nickname: data.nick,
       phonenumber: data.mobile,
-      openid: customerOpenid.data.openid
+      unionid: customerUnionid.data.unionid
+    }
+    if(myuser_id) {
+      messages.user_id = myuser_id;
     }
     if(CustomerAddress != 'no found') {
       messages.address_id = CustomerAddress.data.id;
@@ -237,6 +248,7 @@ Page({
       })
       return;
     }
+    // console.log('去注册');
     AUTH.register(this);
   },
   scanOrderCode(){
