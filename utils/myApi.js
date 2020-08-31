@@ -145,6 +145,29 @@ function amendCustomersAddress(userData) {
 }
 
 
+function getFormData(urls,datas) {
+  //  登录后台
+  return new Promise((resolve, reject) => {
+    wx.request({
+        url: urls,
+        method: 'POST',
+        header: {
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        data: datas,
+        success: function (res) {
+            // console.log(res);
+            resolve(res);
+        },
+        fail: function (err) {
+            // console.log(err);
+            reject(err.errMsg);
+        }
+    });
+  });
+}
+
+
 module.exports = {
   address: Address,
   AddressRange: AddressRange,
@@ -152,5 +175,6 @@ module.exports = {
   queryUserOpenid: queryUserOpenid,
   getAddress: getAddress,
   getAddressName: getAddressName,
-  amendCustomersAddress: amendCustomersAddress
+  amendCustomersAddress: amendCustomersAddress,
+  getFormData
 }

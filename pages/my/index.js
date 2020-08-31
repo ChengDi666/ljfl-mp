@@ -68,6 +68,7 @@ Page({
     let isOk = true;
     const customerUnionid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
     const CustomerAddress = await Add.getAddress(data.mobile);
+    // console.log(CustomerAddress);
     const messages = {
       nickname: data.nick,
       phonenumber: data.mobile,
@@ -79,6 +80,9 @@ Page({
     if(CustomerAddress != 'no found') {
       messages.address_id = CustomerAddress.data.id;
       isOk = await this.syncAddress(CustomerAddress.data, data.nick, data.mobile);
+      //  同步积分
+      await AUTH.asyncScode(data.mobile, CustomerAddress.data.score);
+      this.getUserAmount();
     }
     if(true) {
       Add.getUserMessage(messages).then((res) => {

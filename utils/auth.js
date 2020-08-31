@@ -1,4 +1,5 @@
 const WXAPI = require('apifm-wxapi')
+const myApi = require('./myApi');
 
 async function checkSession(){
   return new Promise((resolve, reject) => {
@@ -173,6 +174,63 @@ async function checkAndAuthorize (scope) {
   })  
 }
 
+ async function asyncScode(mobile, score) { //  同步积分
+    //  绿分
+  var urls = 'https://user.api.it120.cc';
+  const datas = {
+      merchantNo: '2005060925355435',
+      merchantKey: '00dfbdb296ec754d2899102eac0434a6',
+    };
+  
+  const adminToken = await myApi.getFormData(`${urls}/login/key`, datas);
+  console.log(adminToken);
+
+  const messages = {
+    score: score,
+    mobile: mobile,
+    remark: '初始化同步积分'
+  };
+  const resdata = await new Promise((resolve, reject) => {
+    wx.request({
+      url: `${urls}/user/apiExtUserScoreLog/save`,
+      method: 'POST',
+      header: {
+          'content-type': 'application/x-www-form-urlencoded',
+          'X-Token': adminToken.data.data
+      },
+      data: messages,
+      success: function (res) {
+          console.log(res);
+          if(res.data.code != 0) {
+            wx.showToast({
+              title: '积分同步出现异常，请联系工作人员进行补录。',
+              icon: 'none',
+              mask: true,
+              duration: 3000
+            })
+          }
+          resolve(res);
+      },
+      fail: function (err) {
+          console.log(err);
+          // return false;
+          reject(err);
+      }
+    });
+    });
+    if (resdata.statusCode == 200) {
+      return true;
+    } else {
+      wx.showToast({
+        title: '积分同步出现异常，请联系工作人员进行补录。',
+        icon: 'none',
+        mask: true,
+        duration: 3000
+      })
+      return false;
+    }
+}
+
 
 module.exports = {
   checkHasLogined: checkHasLogined,
@@ -181,5 +239,6 @@ module.exports = {
   login: login,
   register: register,
   loginOut: loginOut,
-  checkAndAuthorize: checkAndAuthorize
+  checkAndAuthorize: checkAndAuthorize,
+  asyncScode
 }
