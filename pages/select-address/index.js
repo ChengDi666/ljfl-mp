@@ -39,11 +39,12 @@ Page({
   },
 
   onLoad: async function() {
-    const openidMessage =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    const user = await Add.queryUserOpenid(openidMessage.data.openid)
-    this.setData({
-      customers: user.customer
-    })
+    // const openidMessage =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    // console.log(openidMessage);
+    // const user = await Add.queryUserOpenid(openidMessage.data.openid)
+    // this.setData({
+    //   customers: user.customer
+    // })
   },
   onShow: function() {
     AUTH.checkHasLogined().then(isLogined => {

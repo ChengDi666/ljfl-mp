@@ -7,46 +7,30 @@ Page({
     latitude: '',
     addressList: [[''],[''],['']],
     showModal:false,
-    checkedAdd: {},
+    checkedAdd: {},   //  选中的小区地址
     longAddress: '请选择',
-    xiaoquAdd: [],
+    xiaoquAdd: [],      //  所有地址数组
 
     markers: [],
 
     sel_showModal:false,
-    value: [0],
+    value: [0],    //  选择的下标
     user_openid: '',
-    add_id: ''
+    add_id: ''      //   选择的具体地址
   },
 
 
 async CustomersAddress() {
+  //  绑定地址到平台
   let isTrue = false;
-  const uid = await Add.queryUserOpenid(this.data.user_openid, '')
-  // console.log(uid)
-  let  addMessage;
-  // addMessage = uid.data[0].addresses;
-  // if(uid.data.length != 0) {
-    // if(!addMessage) { //  没有地址信息
-    //   addMessage = { data: [this.data.add_id] };
-    //   Add.amendCustomersAddress({
-    //     address: addMessage,
-    //     id: uid.data[0].id
-    //   });
-    //   return isTrue;
-    // } else {
-    //   addMessage.data.map((item) => {
-    //     if (item.id == this.data.add_id.id) {
-    //       isTrue = true;
-    //     }
-    //   });
-    // }
-  // }
+  const uid = await Add.getAddress({unionid: this.data.user_openid})
+  console.log(uid)
   if(!isTrue) {
-    addMessage = { data: this.data.add_id};
+    await this.shezhi();    //  绑定地址前，测试是否是主用户
+    console.log(this.data.add_id);
     Add.amendCustomersAddress({
-      address: addMessage,
-      id: uid.customer.id
+      addressid: this.data.add_id.id,
+      id: uid.data[0].id
     });
   }
   return isTrue;
@@ -150,7 +134,7 @@ async CustomersAddress() {
         })
       }, 500);
     },
-    // -选择器
+    // -选择器 -- 确定
     sel_haode() {
       let isShow = true;
       if(this.data.value) {
@@ -336,10 +320,33 @@ async CustomersAddress() {
         mask: true
       })
     },
-
+//  设置主用户
+async shezhi() {
+  const isok = await Add.getAddress({addressid: this.data.add_id.id}).then(res => {
+    //  根据地址id 查询是否有用户
+    console.log(res)
+    if (res.data.length >= 1) { //  当前地址有用户绑定 —— 不是主用户
+      console.log('当前地址有用户绑定 —— 不是主用户')
+      return false;
+    }
+    return true;
+  });
+  console.log(isok);
+  if(isok) {
+    //  修改用户附加信息——主用户
+    const message = {
+      token: wx.getStorageSync('token'),
+      extJsonStr: JSON.stringify({ '主用户': '是'}),  //  附加信息
+    };
+    WXAPI.modifyUserInfo(message).then((res) => {
+      console.log(res);
+    });
+  }
+},
 
 
 async bindSave(e) {
+  console.log(this.data.add_id)
   if(await this.CustomersAddress()) {
     //  地址已存在
     wx.showToast({

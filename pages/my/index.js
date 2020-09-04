@@ -67,23 +67,23 @@ Page({
     const myuser_id = wx.getStorageSync('tuijian');
     let isOk = true;
     const customerUnionid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    const CustomerAddress = await Add.getAddress(data.mobile);
+    const CustomerAddress = await Add.getAddress({phonenumber: data.mobile});
     // console.log(CustomerAddress);
     const messages = {
       nickname: data.nick,
       phonenumber: data.mobile,
-      unionid: customerUnionid.data.unionid
+      unionid: customerUnionid.data.openid
     }
     if(myuser_id) {
       messages.user_id = myuser_id;
     }
-    if(CustomerAddress != 'no found') {
-      messages.address_id = CustomerAddress.data.id;
-      isOk = await this.syncAddress(CustomerAddress.data, data.nick, data.mobile);
-      //  同步积分
-      await AUTH.asyncScode(data.mobile, CustomerAddress.data.score);
-      this.getUserAmount();
-    }
+    // if(CustomerAddress.data.length != 0) {//  用户存在
+    //   messages.address_id = CustomerAddress.data[0].address_id;
+    //   isOk = await this.syncAddress(CustomerAddress.data[0], data.nick, data.mobile);
+    //   //  同步积分
+    //   // await AUTH.asyncScode(data.mobile, CustomerAddress.data.score);
+    //   // this.getUserAmount();
+    // }
     if(true) {
       Add.getUserMessage(messages).then((res) => {
         if(isOk) {
@@ -104,10 +104,29 @@ Page({
       });
     }
   },
+  editCustomer() {
+    //  修改用户信息——主用户
+    const message = {
+      token: wx.getStorageSync('token'),
+      extJsonStr: JSON.stringify({ '主用户': '是'}),  //  附加信息
+    };
+    WXAPI.modifyUserInfo(message).then((res) => {
+      console.log(res);
+    });
+  },
   async syncAddress(data, nick, mobile) {
     //  地址同步到商城
     await this.delAllAddress();
-    const addressName = await Add.getAddressName(data.id);
+    console.log(data);
+    const CustomerAddress = await Add.getAddress({addressid: data.address_id});
+    console.log(CustomerAddress);
+    //  如果只有一个用户，则是主用户。如果多个用户，则是副用户
+    if(CustomerAddress.data.length == 1) {
+      // console.log('只有一个用户，是主用户');
+      this.editCustomer();
+    }
+    console.log(`有${CustomerAddress.data.length}个用户，是副用户`);
+    const addressName = await Add.getAddressName(data.address_id);
     // console.log(a);
     let p_id;
     let c_id;

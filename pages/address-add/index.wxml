@@ -25,8 +25,8 @@
 					</view>
 					<view bindtap="btn" class="btn">
 						<view class="weui-cell weui-cell_select">
-								<view>{{checkedAdd.parentname}}</view>
-								<input style="display:none;"  name="input" value="{{checkedAdd.parentname}}" />
+								<view>{{checkedAdd.fullname}}</view>
+								<input style="display:none;"  name="input" value="{{checkedAdd.fullname}}" />
 						</view>
 					</view>
 				</view>

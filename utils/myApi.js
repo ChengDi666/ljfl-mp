@@ -42,7 +42,7 @@ function AddressRange(lat, lng) {
 }
 
 function queryUserOpenid(unionid) {
-  //  通过Openid查询用户是否存在
+  //  通过unionid查询用户是否存在
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${urls.myLink}/api/customers/unionid/${unionid}`,
@@ -87,11 +87,14 @@ function getUserMessage(userData) {
 
 
 function getAddress(data) {
-  //  通过手机获取地址信息
+  //  通过手机 查询客户信息
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls.myLink}/api/addresses?search=${data}`,
+      url: `${urls.myLink}/api/customers`,
+      // url: `${urls.myLink}/api/customers?phonenumber=${data}`,
+      // url: `${urls.myLink}/api/addresses?search=${data}`,
       method: 'GET',
+      data: data,
       header: {
         'content-type': 'application/json' // 默认值
       },
@@ -130,7 +133,7 @@ function amendCustomersAddress(userData) {
       url: `${urls.myLink}/api/customers/${userData.id}`,
       data: {
         // addresses: userData.address,
-        address_id: userData.address.data.id
+        address_id: userData.addressid
       },
       method: 'PUT',
       header: {
