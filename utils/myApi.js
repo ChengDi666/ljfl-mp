@@ -60,6 +60,45 @@ function queryUserOpenid(unionid) {
   });
 }
 
+function queryScode(id) {
+  //  通过地址id 查询地址和积分
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${urls.myLink}/api/addresses?id=${id}`,
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success (res) {
+        // console.log(res)
+        return resolve(res.data)
+      },
+      fail (err) {
+        console.log(err)
+      }
+    })
+  });
+}
+
+
+function getUserId(phonenumber) {
+  //  通过地址id 查询地址和积分
+  return new Promise((resolve, reject) => {
+    wx.request({
+      url: `${urls.myLink}/api/backend/user?phonenumber=${phonenumber}`,
+      header: {
+        'content-type': 'application/json' // 默认值
+      },
+      success (res) {
+        // console.log(res)
+        return resolve(res.data)
+      },
+      fail (err) {
+        console.log(err)
+      }
+    })
+  });
+}
+
 function getUserMessage(userData) {
   //  客户注册
   return new Promise((resolve, reject) => {
@@ -86,7 +125,7 @@ function getUserMessage(userData) {
 }
 
 
-function getAddress(data) {
+function getCustomers(data) {
   //  通过手机 查询客户信息
   return new Promise((resolve, reject) => {
     wx.request({
@@ -123,6 +162,40 @@ function getAddressName(id) {
     })
   });
 }
+
+function getAddresses(mobile) {
+  //  通过手机号获取商城用户信息
+  return new Promise((resolve, reject) => {
+    wx.request({
+        url: `${urls.myLink}/api/addresses?search=${mobile}`,
+        header: {
+            'content-type': 'application/json'
+        },
+        success: function (res) {
+            // console.log(res);
+            return resolve(res)
+        }
+    });
+  });
+}
+
+
+function scoresTo(from, to, score) {
+  //  积分转让
+  return new Promise((resolve, reject) => {
+    wx.request({
+        url: `${urls.myLink}api/backend/adjustscore?from=${from}&to=${to}&score=${score}`,
+        header: {
+            'content-type': 'application/json'
+        },
+        success: function (res) {
+            // console.log(res);
+            return resolve(res)
+        }
+    });
+  });
+}
+
 
 
 
@@ -176,8 +249,12 @@ module.exports = {
   AddressRange: AddressRange,
   getUserMessage: getUserMessage,
   queryUserOpenid: queryUserOpenid,
-  getAddress: getAddress,
+  getCustomers: getCustomers,
   getAddressName: getAddressName,
   amendCustomersAddress: amendCustomersAddress,
-  getFormData
+  getFormData,
+  queryScode,
+  getAddresses,
+  getUserId,
+  scoresTo
 }

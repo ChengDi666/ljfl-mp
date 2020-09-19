@@ -66,20 +66,20 @@
     <image class="next" src="/images/icon/next.png"></image>
   </view>
   <view class="line"></view>
-  <navigator url="/pages/maidan/index">
+  <!-- <navigator url="/pages/maidan/index">
     <view class="menu-item">
       <view class="l">优惠买单</view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>
-  </navigator>
-  <view class="line"></view> 
+  </navigator> -->
+  <!-- <view class="line"></view> 
   <navigator url="/pages/asset/index">
     <view class="menu-item">
       <view class="l">资金明细</view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>
   </navigator>
-  <view class="line"></view>  
+  <view class="line"></view>   -->
   <!-- flex布局的新菜单 -->
   <!-- <view class="menu-item">
     <view class="l">我的订单</view>
@@ -97,7 +97,7 @@
     <view class="r">内容</view>
   </view> -->
 
-  <view class="space"></view>
+  <!-- <view class="space"></view>
   <navigator wx:if="{{!apiUserInfoMap.base.isSeller}}" url="/pages/fx/apply-status">
     <view class="menu-item">
       <view class="l">成为分销商</view>
@@ -123,22 +123,22 @@
       <view class="l">佣金明细</view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>
-  </navigator>
+  </navigator> -->
 
-  <view class="space"></view>
-  <navigator url="/pages/invoice/apply">
+  <!-- <view class="space"></view> -->
+  <!-- <navigator url="/pages/invoice/apply">
     <view class="menu-item">
       <view class="l">申请发票</view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>
-  </navigator>
-  <view class="line"></view>
-  <navigator url="/pages/invoice/list">
+  </navigator> -->
+  <!-- <view class="line"></view> -->
+  <!-- <navigator url="/pages/invoice/list">
     <view class="menu-item">
       <view class="l">发票记录</view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>
-  </navigator>
+  </navigator> -->
 
   <view class="space"></view>  
   <navigator url="/pages/select-address/index">
@@ -148,21 +148,29 @@
     </view>
   </navigator>
   <view class="line"></view>
-  <navigator url="/pages/coupons/index">
+  <view wx:if="{{userMobile}}" class="menu-item">
+    <view class="l">绑定手机</view>
+    <view class="r">{{ userMobile }}</view>
+  </view>
+  <view  wx:else class="menu-item">
+    <view class="l">绑定手机</view>
+    <button type="primary" size="mini" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">立即绑定</button>
+  </view>
+  <view class="line"></view>
+  <navigator url="/pages/home/index">
+    <view class="menu-item">
+      <view class="l">好友列表</view>
+      <image class="next" src="/images/icon/next.png"></image>
+    </view>
+  </navigator>
+  <!-- <navigator url="/pages/coupons/index">
     <view class="menu-item">
       <view class="l">领券中心</view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>
-  </navigator>
-  <view class="line"></view>
-  <navigator url="/pages/goods/fav">
-    <view class="menu-item">
-      <view class="l">我的收藏</view>
-      <image class="next" src="/images/icon/next.png"></image>
-    </view>
-  </navigator>
+  </navigator> -->
 
-  <view class="space"></view>
+  <!-- <view class="space"></view>
   <navigator url="/pages/sign/index">
     <view class="menu-item">
       <view class="l">每日签到</view>
@@ -183,23 +191,23 @@
       <image class="next" src="/images/icon/next.png"></image>
     </view>
   </navigator>
-  <view class="line"></view>
+  <view class="line"></view> -->
 
   <view class="space"></view>
   <!-- <view class="menu-item" bindtap="aboutUs">
     <view class="l">关于我们</view>
     <image class="next" src="/images/icon/next.png"></image>
   </view> -->
+  <!-- <view class="line"></view> -->
+  
+  <navigator url="/pages/goods/fav">
+    <view class="menu-item">
+      <view class="l">我的收藏</view>
+      <image class="next" src="/images/icon/next.png"></image>
+    </view>
+  </navigator>
   <view class="line"></view>
-  <view wx:if="{{userMobile}}" class="menu-item">
-    <view class="l">绑定手机</view>
-    <view class="r">{{ userMobile }}</view>
-  </view>
-  <view  wx:else class="menu-item">
-    <view class="l">绑定手机</view>
-    <button type="primary" size="mini" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">立即绑定</button>
-  </view>
-  <view class="line"></view>
+
   <view class="menu-item" bindtap="clearStorage">
     <view class="l">清除缓存</view>
     <image class="next" src="/images/icon/next.png"></image>

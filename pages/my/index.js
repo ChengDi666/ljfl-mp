@@ -23,6 +23,8 @@ Page({
     if(scene != 'undefined') {
       wx.setStorageSync('tuijian', scene);
     }
+
+    // AUTH.asyncScode('13865077006', 0);
     WXAPI.province().then((res) => {
       // console.log(res)
       this.setData({
@@ -67,24 +69,32 @@ Page({
     const myuser_id = wx.getStorageSync('tuijian');
     let isOk = true;
     const customerUnionid = await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    const CustomerAddress = await Add.getAddress({phonenumber: data.mobile});
+    const CustomerAddress = await Add.getCustomers({phonenumber: data.mobile});
     // console.log(CustomerAddress);
+    // console.log(customerUnionid);
     const messages = {
       nickname: data.nick,
       phonenumber: data.mobile,
-      unionid: customerUnionid.data.openid
+      unionid: customerUnionid.data.unionid
     }
     if(myuser_id) {
       messages.user_id = myuser_id;
     }
-    // if(CustomerAddress.data.length != 0) {//  用户存在
-    //   messages.address_id = CustomerAddress.data[0].address_id;
-    //   isOk = await this.syncAddress(CustomerAddress.data[0], data.nick, data.mobile);
-    //   //  同步积分
-    //   // await AUTH.asyncScode(data.mobile, CustomerAddress.data.score);
-    //   // this.getUserAmount();
-    // }
-    if(true) {
+    if(CustomerAddress.data.length != 0) {//  用户存在
+      messages.address_id = CustomerAddress.data[0].address_id;
+      isOk = await this.syncAddress(CustomerAddress.data[0], data.nick, data.mobile);
+      //  同步积分
+      if(!isOk && CustomerAddress.data[0].isholder == 1) { //  有地址, 1 为户主
+        const addressScode = await Add.queryScode(CustomerAddress.data[0].address_id);
+        // console.log(addressScode.data[0].score);
+        const score = addressScode.data[0].score
+        if(score != 0) {  //  有积分进行同步
+          await AUTH.asyncScode(data.mobile, score, '注册同步积分');
+          this.getUserAmount();
+        }
+      }
+    }
+    if(true) {  //  创建用户
       Add.getUserMessage(messages).then((res) => {
         if(isOk) {
           wx.showModal({
@@ -104,28 +114,21 @@ Page({
       });
     }
   },
-  editCustomer() {
-    //  修改用户信息——主用户
-    const message = {
-      token: wx.getStorageSync('token'),
-      extJsonStr: JSON.stringify({ '主用户': '是'}),  //  附加信息
-    };
-    WXAPI.modifyUserInfo(message).then((res) => {
-      console.log(res);
-    });
-  },
   async syncAddress(data, nick, mobile) {
     //  地址同步到商城
     await this.delAllAddress();
     console.log(data);
-    const CustomerAddress = await Add.getAddress({addressid: data.address_id});
-    console.log(CustomerAddress);
-    //  如果只有一个用户，则是主用户。如果多个用户，则是副用户
-    if(CustomerAddress.data.length == 1) {
-      // console.log('只有一个用户，是主用户');
-      this.editCustomer();
+    if(data.address_id == null) { //  用户没绑定地址
+      // console.log('用户没绑定地址');
+      return true;
     }
-    console.log(`有${CustomerAddress.data.length}个用户，是副用户`);
+    // const CustomerAddress = await Add.getCustomers({addressid: data.address_id});
+    // // console.log(CustomerAddress);
+    // //  如果只有一个用户，则是主用户。如果多个用户，则是副用户
+    // if(CustomerAddress.data.length == 1) {
+    //   // console.log('只有一个用户，是主用户');
+    //   this.editCustomer();
+    // }
     const addressName = await Add.getAddressName(data.address_id);
     // console.log(a);
     let p_id;
@@ -155,7 +158,7 @@ Page({
       isDefault: 'true', //  是否为默认地址
       provinceId: p_id,
       cityId: c_id,
-      extJsonStr: JSON.stringify({ myAddressId: data.id}),  //  附加信息
+      // extJsonStr: JSON.stringify({ myAddressId: data.id}),  //  附加信息
     }
     // console.log(postData);
     await WXAPI.addAddress(postData)

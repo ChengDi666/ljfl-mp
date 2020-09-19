@@ -174,7 +174,7 @@ async function checkAndAuthorize (scope) {
   })  
 }
 
- async function asyncScode(mobile, score) { //  同步积分
+ async function asyncScode(mobile, score, text) { //  同步积分
     //  绿分
   var urls = 'https://user.api.it120.cc';
   const datas = {
@@ -184,15 +184,71 @@ async function checkAndAuthorize (scope) {
   
   const adminToken = await myApi.getFormData(`${urls}/login/key`, datas);
   console.log(adminToken);
-
+  const isOK = await delScore(mobile, adminToken);  //  清空积分
+  if(!isOK) { //  清除积分失败
+    return false;
+  }
   const messages = {
     score: score,
     mobile: mobile,
-    remark: '初始化同步积分'
+    remark: text
   };
-  const resdata = await new Promise((resolve, reject) => {
+  const resdata = await UserScoreLog(messages, adminToken);
+    if(resdata.statusCode != 200) {  //  请求错误
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+      return false;
+    }
+    if(resdata.data.code != 0) { //  数据错误
+      wx.showToast({
+        title: `积分同步出现异常，请联系工作人员 —— ${resdata.data.msg}`,
+        icon: 'none',
+        mask: true,
+        duration: 3000
+      })
+      return false;
+    }
+    return true;
+}
+
+
+async function delScore(mobile, adminToken) {
+  const userAmount = await WXAPI.userAmount(wx.getStorageSync('token'));
+  if (userAmount.data.score != 0) {
+    const num = 0 - userAmount.data.score
+    const resdata = await UserScoreLog({
+      score: num,
+      mobile: mobile,
+      remark: '清空积分'
+    }, adminToken);
+    console.log(resdata);
+    if(resdata.statusCode != 200) {  //  请求错误
+      wx.showToast({
+        title: '网络错误',
+        icon: 'none'
+      })
+      return false;
+    }
+    if(resdata.data.code != 0) { //  数据错误
+      wx.showToast({
+        title: `积分同步出现异常，请联系工作人员 —— ${resdata.data.msg}`,
+        icon: 'none',
+        mask: true,
+        duration: 3000
+      })
+      return false;
+    }
+  }
+  return true;
+}
+
+
+function UserScoreLog(messages, adminToken) {
+  return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls}/user/apiExtUserScoreLog/save`,
+      url: `https://user.api.it120.cc/user/apiExtUserScoreLog/save`,
       method: 'POST',
       header: {
           'content-type': 'application/x-www-form-urlencoded',
@@ -201,14 +257,6 @@ async function checkAndAuthorize (scope) {
       data: messages,
       success: function (res) {
           console.log(res);
-          if(res.data.code != 0) {
-            wx.showToast({
-              title: '积分同步出现异常，请联系工作人员进行补录。',
-              icon: 'none',
-              mask: true,
-              duration: 3000
-            })
-          }
           resolve(res);
       },
       fail: function (err) {
@@ -218,19 +266,7 @@ async function checkAndAuthorize (scope) {
       }
     });
     });
-    if (resdata.statusCode == 200) {
-      return true;
-    } else {
-      wx.showToast({
-        title: '积分同步出现异常，请联系工作人员进行补录。',
-        icon: 'none',
-        mask: true,
-        duration: 3000
-      })
-      return false;
-    }
 }
-
 
 module.exports = {
   checkHasLogined: checkHasLogined,

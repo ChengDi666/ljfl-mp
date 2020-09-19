@@ -60,9 +60,9 @@ Page({
       return ;
     }
     const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    const uid = await Add.getAddress(userDetail.mobile);
-    // console.log(uid)
-    if(uid.data == null) {
+    const uid = await Add.getAddresses(userDetail.mobile);
+    console.log(uid)
+    if(uid.data.data == null) {
       wx.hideLoading()
       wx.showToast({
         title: '未绑定地址',
@@ -71,7 +71,7 @@ Page({
     }
     wx.hideLoading()
     setTimeout(() => {
-      this.qrcodeMessage(uid.data.cardno);
+      this.qrcodeMessage(uid.data.data.cardno);
     }, 200)
 
     // wx.request({
@@ -88,7 +88,7 @@ Page({
     //   }
     // })
   },
-   // 长按保存
+  // //  长按保存
   //  save: function () {
   //   console.log('save')
   //   wx.showActionSheet({
@@ -103,6 +103,14 @@ Page({
   // },
 
   async qrcodeMessage(data) {
+    if(data == null || data == undefined || data == '') {
+      wx.hideLoading()
+      wx.showToast({
+        title: '生成二维码错误',
+        icon: 'none'
+      })
+      console.log('生成二维码错误');
+    }
     //获取canvas对象
     const ctx = wx.createCanvasContext('canvas')
     const rate = wx.getSystemInfoSync().windowWidth / 750

@@ -514,6 +514,17 @@ module.exports = {
   friendUserDetail: function friendUserDetail(token, uid) {
     return request('/user/friend/detail', true, 'get', { token: token, uid: uid });
   },
+  
+  addAttention: function addAttention(token, uid) {
+    return request('/user/attention/add', true, 'post', { token: token, uid: uid });
+  },
+  AttentionList: function AttentionList(data) {
+    return request('/user/attention/my-attention', true, 'post', data);
+  },
+  removeAttention: function removeAttention(token, uid) {
+    return request('/user/attention/remove', true, 'post', { token: token, uid: uid });
+  },
+
   videoDetail: function videoDetail(videoId) {
     return request('/media/video/detail', true, 'get', {
       videoId: videoId

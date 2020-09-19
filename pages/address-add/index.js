@@ -15,7 +15,7 @@ Page({
 
     sel_showModal:false,
     value: [0],    //  选择的下标
-    user_openid: '',
+    user_unionid: '',
     add_id: ''      //   选择的具体地址
   },
 
@@ -23,14 +23,31 @@ Page({
 async CustomersAddress() {
   //  绑定地址到平台
   let isTrue = false;
-  const uid = await Add.getAddress({unionid: this.data.user_openid})
-  console.log(uid)
+  const uid = await Add.getCustomers({unionid: this.data.user_unionid})
+  // console.log(uid)
   if(!isTrue) {
-    await this.shezhi();    //  绑定地址前，测试是否是主用户
-    console.log(this.data.add_id);
+    // await this.setPrimaryUser();    //  绑定地址前，测试是否是主用户
+    // console.log(this.data.add_id);
+    this.data.add_id
+    const score = this.data.add_id.score;
+    console.log(this.data.mobile, score);
+    //  更新地址 时 同步积分
+    if(score != 0 && uid.data[0].isholder == 1) {
+      // await AUTH.asyncScode(this.data.mobile, score, '绑定地址同步积分');
+    }
     Add.amendCustomersAddress({
       addressid: this.data.add_id.id,
       id: uid.data[0].id
+    }).then((res) => {
+      console.log(res);
+      //  更新地址成功后，用户为户主时 同步积分
+      if(score != 0 && res.data.data.isholder == 1) {
+        console.log('更新地址成功后，用户为户主时 同步积分');
+        // await AUTH.asyncScode(this.data.mobile, score, '绑定地址同步积分');
+      } else {
+        console.log('不是户主，没同步积分');
+        console.log(this.data.add_id);
+      }
     });
   }
   return isTrue;
@@ -321,32 +338,39 @@ async CustomersAddress() {
       })
     },
 //  设置主用户
-async shezhi() {
-  const isok = await Add.getAddress({addressid: this.data.add_id.id}).then(res => {
+async setPrimaryUser() {
+  const isok = await Add.getCustomers({addressid: this.data.add_id.id}).then(res => {
     //  根据地址id 查询是否有用户
-    console.log(res)
+    // console.log(res)
     if (res.data.length >= 1) { //  当前地址有用户绑定 —— 不是主用户
-      console.log('当前地址有用户绑定 —— 不是主用户')
+      // console.log('当前地址有用户绑定 —— 不是主用户')
       return false;
     }
     return true;
   });
-  console.log(isok);
   if(isok) {
     //  修改用户附加信息——主用户
+    const userMes = await WXAPI.userDetail(wx.getStorageSync('token'));
+    // console.log(userMes)
     const message = {
+      avatarUrl: userMes.data.base.avatarUrl,
+      city: userMes.data.base.city,
+      province: userMes.data.base.province,
+      nick: userMes.data.base.nick,
+      gender: userMes.data.base.gender,
       token: wx.getStorageSync('token'),
       extJsonStr: JSON.stringify({ '主用户': '是'}),  //  附加信息
     };
     WXAPI.modifyUserInfo(message).then((res) => {
-      console.log(res);
+      // console.log(res);
+      // console.log('是主用户');
     });
   }
 },
 
 
 async bindSave(e) {
-  console.log(this.data.add_id)
+  // console.log(this.data.add_id)
   if(await this.CustomersAddress()) {
     //  地址已存在
     wx.showToast({
@@ -406,10 +430,10 @@ async bindSave(e) {
     linkMan: this.data.nick,
     address: shortAddress,
     mobile: this.data.mobile,
-    // isDefault: 'true', //  是否为默认地址
+    isDefault: 'true', //  是否为默认地址
     provinceId: p_id,
     cityId: c_id,
-    extJsonStr: JSON.stringify({ myAddressId: this.data.add_id.id}),  //  附加信息
+    // extJsonStr: JSON.stringify({ myAddressId: this.data.add_id.id}),  //  附加信息
   }
   let apiResult
   if (this.data.id) {
@@ -438,7 +462,7 @@ async bindSave(e) {
     //  通过本地存储的token 获取Openid
     const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
     this.setData({
-      user_openid: a.data.openid
+      user_unionid: a.data.unionid
     })
     const b = await WXAPI.userDetail(wx.getStorageSync('token'))
     if(!b.data.base.mobile) {

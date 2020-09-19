@@ -1,0 +1,68 @@
+  
+<view  class="page">
+  <view class="search">
+    <input type="text" placeholder="请输入手机号" value="{{phonenumber}}" bindinput="bindinput"></input>
+    <image src="/images/icon/search.svg" bindtap="goSearch"></image>
+  </view>
+  <view class="zu">  
+        <view style="margin: 10px; min-height: 1px;">
+          <view class="weui-cell weui-cell_example " wx:for="{{listArr}}">
+            <view class="weui-cell__hd">
+                <image src="{{item.avatarUrl}}" style="margin-right: 16px;vertical-align: middle;width:50px; height: 50px;"></image>
+            </view>
+            <view class="weui-cell__bd">{{item.nick}}</view>
+            <view class="weui-cell__ft">
+              <a data-id="{{item.uid}}" bindtap="addusers">关注</a>
+            </view>
+          </view>
+        </view>
+
+        <view style="margin: 10px 0">
+          <view class="weui-cells__title">我的关注</view>
+          <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell weui-cell_example " wx:for="{{users}}" style="margin-left: 30px; margin-bottom: 10px;"  data-item="{{item}}"  bindtap="bingLongTaps">
+                <view class="weui-cell__hd">
+                    <image src="{{item.avatarUrls}}" style="margin-right: 26px;vertical-align: middle;width:50px; height: 50px;"></image>
+                </view>
+                <view class="weui-cell__bd">{{item.nicks}}</view>
+                <!-- <view class="weui-cell__ft">{{item.dateAdd}}</view> -->
+            </view>
+          </view>
+        </view>
+  </view>
+
+
+
+    <view wx:if="{{showIOSDialog}}" class="fadeIn" bindtap="close">
+        <view class="weui-mask"></view>
+        <view class="weui-actionsheet weui-actionsheet_toggle">
+            <view class="weui-actionsheet__title">
+                <view class="weui-actionsheet__title-text">操作列表</view>
+            </view>
+            <view class="weui-actionsheet__menu">
+                <view class="weui-actionsheet__cell" bindtap="goScore">积分转让</view>
+                <view class="weui-actionsheet__cell weui-actionsheet__cell_warn" bindtap="removeUser">取消关注</view>
+            </view>
+            <view class="weui-actionsheet__action">
+                <view class="weui-actionsheet__cell">取消</view>
+            </view>
+        </view>
+    </view>
+
+
+    <view class="fadeIn" wx:if="{{iosDialog1}}">
+        <view class="weui-mask"></view>
+        <view class="weui-dialog">
+            <view class="weui-dialog__hd"><strong class="weui-dialog__title">积分转让</strong></view>
+            <view class="weui-dialog__bd" style="margin: 10px 0 20px;">
+              <!-- <view>我的积分： {{myScore}}</view> -->
+              <input type="text" style="border-bottom: 1rpx solid rgba(0,0,0,.2); padding: 5px 0;" placeholder="请输入转让积分数" bindinput="bindinputScore"></input>
+            </view>
+            <view class="weui-dialog__ft">
+                <a class="weui-dialog__btn weui-dialog__btn_default" bindtap="scoreTo">取消</a>
+                <a class="weui-dialog__btn weui-dialog__btn_primary" bindtap="scoreTo">确认</a>
+            </view>
+        </view>
+    </view>
+
+</view>
