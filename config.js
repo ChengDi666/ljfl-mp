@@ -5,5 +5,6 @@ module.exports = {
   shareProfile: '百款精品商品，总有一款适合您', // 首页转发的时候话术
   goodsDetailSkuShowType: 0, // 0 为点击立即购买按钮后出现规格尺寸、数量的选择； 1为直接在商品详情页面显示规格尺寸、数量的选择，而不弹框
   shopMod: 1, // 0为单店铺版本 ； 1为多店铺版本
-  myLink: 'https://yantai.api.shlj.ltd',  // 后台URL
+  // myLink: 'https://yantai.api.shlj.ltd',  // 后台URL
+  myLink: 'https://yantai.shlj.ltd',  // 后台URL- 烟台
 }

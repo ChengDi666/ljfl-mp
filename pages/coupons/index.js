@@ -60,18 +60,19 @@ Page({
       return ;
     }
     const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    const uid = await Add.getAddresses(userDetail.mobile);
-    console.log(uid)
-    if(uid.data.data == null) {
-      wx.hideLoading()
-      wx.showToast({
-        title: '未绑定地址',
-        icon: 'none'
-      })
-    }
-    wx.hideLoading()
+    // const uid = await Add.getAddresses({phonenumber :userDetail.mobile});
+    // console.log(uid)
+    // if(uid.data.data == null) {
+    //   wx.hideLoading()
+    //   wx.showToast({
+    //     title: '未绑定地址',
+    //     icon: 'none'
+    //   })
+    // }
+    // wx.hideLoading()
     setTimeout(() => {
-      this.qrcodeMessage(uid.data.data.cardno);
+      this.qrcodeMessage(userDetail.mobile);
+      // this.qrcodeMessage(uid.data.data.cardno);
     }, 200)
 
     // wx.request({

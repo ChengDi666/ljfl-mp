@@ -34,30 +34,35 @@ Page({
 	},	
   onShow() {
     const _this = this
-    const order_hx_uids = wx.getStorageSync('order_hx_uids')
-    this.setData({
-      version: CONFIG.version,
-      order_hx_uids
-    })
+    //  版本信息
+    // const order_hx_uids = wx.getStorageSync('order_hx_uids')
+    // this.setData({
+    //   version: CONFIG.version,
+    //   order_hx_uids
+    // })
     AUTH.checkHasLogined().then(isLogined => {
       this.setData({
         wxlogin: isLogined
       })
       if (isLogined) {        
+        
+        console.log('欢迎光临');
         _this.getUserApiInfo();
         _this.getUserAmount();
+      } else {
+        console.log('没登陆有');
       }
     })
     // 获取购物车数据，显示TabBarBadge
     TOOLS.showTabBarBadge();
   },
-  aboutUs : function () {
-    wx.showModal({
-      title: '关于我们',
-      content: '本系统基于开源小程序商城系统 https://github.com/EastWorld/wechat-app-mall 搭建，祝大家使用愉快！',
-      showCancel:false
-    })
-  },
+  // aboutUs : function () {
+  //   wx.showModal({
+  //     title: '关于我们',
+  //     content: '本系统基于开源小程序商城系统 https://github.com/EastWorld/wechat-app-mall 搭建，祝大家使用愉快！',
+  //     showCancel:false
+  //   })
+  // },
   loginOut(){
     AUTH.loginOut()
     wx.reLaunch({
@@ -81,15 +86,18 @@ Page({
       messages.user_id = myuser_id;
     }
     if(CustomerAddress.data.length != 0) {//  用户存在
+      if(CustomerAddress.data[0].cardno) {  //  用户有生态卡号
+        this.syncCardno(CustomerAddress.data[0].cardno);
+      }
+      messages.type_value = CustomerAddress.data[0].type_value ? CustomerAddress.data[0].type_value : 102004
       messages.address_id = CustomerAddress.data[0].address_id;
       isOk = await this.syncAddress(CustomerAddress.data[0], data.nick, data.mobile);
-      //  同步积分
-      if(!isOk && CustomerAddress.data[0].isholder == 1) { //  有地址, 1 为户主
-        const addressScode = await Add.queryScode(CustomerAddress.data[0].address_id);
-        // console.log(addressScode.data[0].score);
-        const score = addressScode.data[0].score
+      if(!isOk) { //  有地址 - 同步地址信息成功
+        const score = CustomerAddress.data[0].score
         if(score != 0) {  //  有积分进行同步
           await AUTH.asyncScode(data.mobile, score, '注册同步积分');
+          //  清除系统内客户积分
+          this.delCustomerScore(CustomerAddress.data[0]);
           this.getUserAmount();
         }
       }
@@ -114,26 +122,44 @@ Page({
       });
     }
   },
+  syncCardno(id) {  //  同步卡号到商城
+    // console.log('同步卡号');
+    // console.log(this.data.apiUserInfoMap);
+    const messages = {
+      avatarUrl: this.data.apiUserInfoMap.base.avatarUrl,
+      city: this.data.apiUserInfoMap.base.city,
+      nick: this.data.apiUserInfoMap.base.nick,
+      province: this.data.apiUserInfoMap.base.province,
+      extJsonStr: JSON.stringify({ cardno: id}),  //  附加信息
+      token: wx.getStorageSync('token')
+    };
+    WXAPI.modifyUserInfo(messages).then(res => {
+      // console.log(res);
+      this.setData({
+        userCardno: id
+      })
+    });
+  },
+  delCustomerScore(data) {
+    console.log('删除系统积分：');
+    console.log(data);
+    Add.amendCustomersAddress(data.id, {score: 0}).then(res => {
+      console.log(res);
+    });
+  },
   async syncAddress(data, nick, mobile) {
     //  地址同步到商城
     await this.delAllAddress();
-    console.log(data);
+    // console.log(data);
     if(data.address_id == null) { //  用户没绑定地址
       // console.log('用户没绑定地址');
       return true;
     }
-    // const CustomerAddress = await Add.getCustomers({addressid: data.address_id});
-    // // console.log(CustomerAddress);
-    // //  如果只有一个用户，则是主用户。如果多个用户，则是副用户
-    // if(CustomerAddress.data.length == 1) {
-    //   // console.log('只有一个用户，是主用户');
-    //   this.editCustomer();
-    // }
     const addressName = await Add.getAddressName(data.address_id);
     // console.log(a);
     let p_id;
     let c_id;
-    if(addressName.data.length == 0) { 
+    if(addressName.data == undefined || addressName.data.length == 0) { 
       //  地址名称分解接口有问题,需要绑定提示
       return true; 
     }
@@ -184,6 +210,13 @@ Page({
       })
       return;
     }
+    // const mymes = wx.getStorageSync('userInfo');
+    // mymes.phone = '13865077006';
+    // wx.setStorageSync('userInfo', mymes)
+    // console.log(e.detail);
+    // console.log('在这里注册用户');
+    // AUTH.register(this);
+    // return ;
     WXAPI.bindMobileWxa(wx.getStorageSync('token'), e.detail.encryptedData, e.detail.iv).then(res => {
       if (res.code === 10002) {
         this.setData({
@@ -217,6 +250,9 @@ Page({
         _data.apiUserInfoMap = res.data
         if (res.data.base.mobile) {
           _data.userMobile = res.data.base.mobile
+        }
+        if (res.data.ext != undefined && res.data.ext.cardno != undefined) {  //  生态卡号
+          _data.userCardno = res.data.ext.cardno
         }
         if (that.data.order_hx_uids && that.data.order_hx_uids.indexOf(res.data.base.id) != -1) {
           _data.canHX = true // 具有扫码核销的权限
@@ -267,6 +303,8 @@ Page({
     })
   },
   processLogin(e) {
+    //  确认信息
+    console.log(e);
     if (!e.detail.userInfo) {
       wx.showToast({
         title: '已取消',
@@ -274,6 +312,7 @@ Page({
       })
       return;
     }
+    // this.mylogin(e);
     // console.log('去注册');
     AUTH.register(this);
   },

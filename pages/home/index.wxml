@@ -1,8 +1,10 @@
   
 <view  class="page">
   <view class="search">
-    <input type="text" placeholder="请输入手机号" value="{{phonenumber}}" bindinput="bindinput"></input>
+    <input  type="number" placeholder="请输入手机号" value="{{phonenumber}}"  style="width: 600rpx;border-radius: 30px 0 0 30px;border-right: none;" maxlength="11" bindinput="bindinput"></input>
+  <view class="search_img_box">
     <image src="/images/icon/search.svg" bindtap="goSearch"></image>
+  </view>
   </view>
   <view class="zu">  
         <view style="margin: 10px; min-height: 1px;">
@@ -17,10 +19,14 @@
           </view>
         </view>
 
-        <view style="margin: 10px 0">
-          <view class="weui-cells__title">我的关注</view>
+        <view style="margin: 20px 0 10px">
+          <view class="weui-cells__title" style="margin-bottom: 10px;">我的关注
+            <view style="display: initial;float: right;padding: 0 20px;" bindtap="shezhi">
+              <image src="/images/nav/ic_catefory_normal.png" style="width: 20px;height: 20px;"></image>
+            </view>
+          </view>
           <view class="weui-cells weui-cells_after-title">
-            <view class="weui-cell weui-cell_example " wx:for="{{users}}" style="margin-left: 30px; margin-bottom: 10px;"  data-item="{{item}}"  bindtap="bingLongTaps">
+            <view class="weui-cell weui-cell_example " wx:for="{{users}}" style="margin-left: 30px; margin-bottom: 10px;"  data-item="{{item}}"  bindtap="userActions">
                 <view class="weui-cell__hd">
                     <image src="{{item.avatarUrls}}" style="margin-right: 26px;vertical-align: middle;width:50px; height: 50px;"></image>
                 </view>
@@ -33,7 +39,7 @@
 
 
 
-    <view wx:if="{{showIOSDialog}}" class="fadeIn" bindtap="close">
+    <view wx:if="{{showDialog}}" class="fadeIn" bindtap="close">
         <view class="weui-mask"></view>
         <view class="weui-actionsheet weui-actionsheet_toggle">
             <view class="weui-actionsheet__title">
@@ -50,17 +56,17 @@
     </view>
 
 
-    <view class="fadeIn" wx:if="{{iosDialog1}}">
+    <view class="fadeIn" wx:if="{{showPopUp}}">
         <view class="weui-mask"></view>
-        <view class="weui-dialog">
+        <view class="weui-dialog" style="top: 40%;">
             <view class="weui-dialog__hd"><strong class="weui-dialog__title">积分转让</strong></view>
             <view class="weui-dialog__bd" style="margin: 10px 0 20px;">
               <!-- <view>我的积分： {{myScore}}</view> -->
-              <input type="text" style="border-bottom: 1rpx solid rgba(0,0,0,.2); padding: 5px 0;" placeholder="请输入转让积分数" bindinput="bindinputScore"></input>
+              <input type="number" focus="true" adjust-position="true" style="border-bottom: 1rpx solid rgba(0,0,0,.2); padding: 5px 0;" placeholder="可转让积分：{{myScore}}" bindinput="bindinputScore"></input>
             </view>
             <view class="weui-dialog__ft">
-                <a class="weui-dialog__btn weui-dialog__btn_default" bindtap="scoreTo">取消</a>
-                <a class="weui-dialog__btn weui-dialog__btn_primary" bindtap="scoreTo">确认</a>
+                <button class="weui-dialog__btn weui-dialog__btn_default" bindtap="closePopUp" style="line-height: inherit;">取消</button>
+                <button class="weui-dialog__btn weui-dialog__btn_primary" bindtap="scoreTo" style="line-height: inherit;" disabled="{{isok}}">确认</button>
             </view>
         </view>
     </view>

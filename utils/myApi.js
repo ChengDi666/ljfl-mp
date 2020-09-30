@@ -23,10 +23,6 @@ function AddressRange(lat, lng) {
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${urls.myLink}/api/addresses/position?position={"lat": "${lat}", "lng": "${lng}"}`,
-      // url: `${urls.myLink}/addresses/position?position={"lat": "${lat}", "lng": "${lng}"}`,
-      // data: {
-      //   position: {lat:lat,lng:lng}
-      // },
       header: {
         'content-type': 'application/json' // 默认值
       },
@@ -81,7 +77,7 @@ function queryScode(id) {
 
 
 function getUserId(phonenumber) {
-  //  通过地址id 查询地址和积分
+  //  关注 -  通过 手机号查询 商城用户
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${urls.myLink}/api/backend/user?phonenumber=${phonenumber}`,
@@ -90,7 +86,7 @@ function getUserId(phonenumber) {
       },
       success (res) {
         // console.log(res)
-        return resolve(res.data)
+        return resolve(res)
       },
       fail (err) {
         console.log(err)
@@ -110,7 +106,8 @@ function getUserMessage(userData) {
         phonenumber: userData.phonenumber,
         address_id: userData.address_id,
         unionid: userData.unionid,
-        user_id: userData.user_id
+        user_id: userData.user_id,
+        type_value: userData.type_value
       },
       method: 'POST',
       header: {
@@ -130,15 +127,13 @@ function getCustomers(data) {
   return new Promise((resolve, reject) => {
     wx.request({
       url: `${urls.myLink}/api/customers`,
-      // url: `${urls.myLink}/api/customers?phonenumber=${data}`,
-      // url: `${urls.myLink}/api/addresses?search=${data}`,
       method: 'GET',
       data: data,
       header: {
         'content-type': 'application/json' // 默认值
       },
       success (res) {
-        console.log(res)
+        // console.log(res)
         return resolve(res.data)
       }
     })
@@ -164,7 +159,7 @@ function getAddressName(id) {
 }
 
 function getAddresses(mobile) {
-  //  通过手机号获取商城用户信息
+  //  通过手机号获取用户信息
   return new Promise((resolve, reject) => {
     wx.request({
         url: `${urls.myLink}/api/addresses?search=${mobile}`,
@@ -184,7 +179,7 @@ function scoresTo(from, to, score) {
   //  积分转让
   return new Promise((resolve, reject) => {
     wx.request({
-        url: `${urls.myLink}api/backend/adjustscore?from=${from}&to=${to}&score=${score}`,
+        url: `${urls.myLink}/api/backend/adjustscore?from=${from}&to=${to}&score=${score}`,
         header: {
             'content-type': 'application/json'
         },
@@ -199,15 +194,12 @@ function scoresTo(from, to, score) {
 
 
 
-function amendCustomersAddress(userData) {
+function amendCustomersAddress(id, userData) {
   //  客户修改地址
   return new Promise((resolve, reject) => {
     wx.request({
-      url: `${urls.myLink}/api/customers/${userData.id}`,
-      data: {
-        // addresses: userData.address,
-        address_id: userData.addressid
-      },
+      url: `${urls.myLink}/api/customers/${id}`,
+      data: userData,
       method: 'PUT',
       header: {
         'content-type': 'application/json' // 默认值

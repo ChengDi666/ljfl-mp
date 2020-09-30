@@ -26,29 +26,18 @@ async CustomersAddress() {
   const uid = await Add.getCustomers({unionid: this.data.user_unionid})
   // console.log(uid)
   if(!isTrue) {
-    // await this.setPrimaryUser();    //  绑定地址前，测试是否是主用户
-    // console.log(this.data.add_id);
-    this.data.add_id
-    const score = this.data.add_id.score;
-    console.log(this.data.mobile, score);
-    //  更新地址 时 同步积分
-    if(score != 0 && uid.data[0].isholder == 1) {
-      // await AUTH.asyncScode(this.data.mobile, score, '绑定地址同步积分');
-    }
-    Add.amendCustomersAddress({
-      addressid: this.data.add_id.id,
-      id: uid.data[0].id
-    }).then((res) => {
-      console.log(res);
-      //  更新地址成功后，用户为户主时 同步积分
-      if(score != 0 && res.data.data.isholder == 1) {
-        console.log('更新地址成功后，用户为户主时 同步积分');
-        // await AUTH.asyncScode(this.data.mobile, score, '绑定地址同步积分');
-      } else {
-        console.log('不是户主，没同步积分');
-        console.log(this.data.add_id);
-      }
+    Add.getUserMessage({
+      phonenumber: uid.data[0].phonenumber,
+      address_id: this.data.add_id.id
+    }).then(res => {
+      console.log(res)
     });
+    // Add.amendCustomersAddress(uid.data[0].id, {
+    //   address_id: this.data.add_id.id
+    // }).then((res) => {
+    //   // console.log(res);
+    //   //  更新地址成功
+    // });
   }
   return isTrue;
 },
@@ -337,38 +326,6 @@ async CustomersAddress() {
         mask: true
       })
     },
-//  设置主用户
-async setPrimaryUser() {
-  const isok = await Add.getCustomers({addressid: this.data.add_id.id}).then(res => {
-    //  根据地址id 查询是否有用户
-    // console.log(res)
-    if (res.data.length >= 1) { //  当前地址有用户绑定 —— 不是主用户
-      // console.log('当前地址有用户绑定 —— 不是主用户')
-      return false;
-    }
-    return true;
-  });
-  if(isok) {
-    //  修改用户附加信息——主用户
-    const userMes = await WXAPI.userDetail(wx.getStorageSync('token'));
-    // console.log(userMes)
-    const message = {
-      avatarUrl: userMes.data.base.avatarUrl,
-      city: userMes.data.base.city,
-      province: userMes.data.base.province,
-      nick: userMes.data.base.nick,
-      gender: userMes.data.base.gender,
-      token: wx.getStorageSync('token'),
-      extJsonStr: JSON.stringify({ '主用户': '是'}),  //  附加信息
-    };
-    WXAPI.modifyUserInfo(message).then((res) => {
-      // console.log(res);
-      // console.log('是主用户');
-    });
-  }
-},
-
-
 async bindSave(e) {
   // console.log(this.data.add_id)
   if(await this.CustomersAddress()) {

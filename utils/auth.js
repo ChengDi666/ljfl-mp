@@ -113,7 +113,8 @@ async function register(page) {
             code: code,
             encryptedData: encryptedData,
             iv: iv,
-            referrer: referrer
+            referrer: referrer,
+            // postJsonString
           }).then(function (res) {
             _this.login(page);
           })
@@ -182,8 +183,8 @@ async function checkAndAuthorize (scope) {
       merchantKey: '00dfbdb296ec754d2899102eac0434a6',
     };
   
-  const adminToken = await myApi.getFormData(`${urls}/login/key`, datas);
-  console.log(adminToken);
+  const adminToken = await myApi.getFormData(`${urls}/login/key`, datas);   //  登录
+  // console.log(adminToken);
   const isOK = await delScore(mobile, adminToken);  //  清空积分
   if(!isOK) { //  清除积分失败
     return false;
@@ -223,7 +224,7 @@ async function delScore(mobile, adminToken) {
       mobile: mobile,
       remark: '清空积分'
     }, adminToken);
-    console.log(resdata);
+    // console.log(resdata);
     if(resdata.statusCode != 200) {  //  请求错误
       wx.showToast({
         title: '网络错误',
@@ -256,11 +257,11 @@ function UserScoreLog(messages, adminToken) {
       },
       data: messages,
       success: function (res) {
-          console.log(res);
+          // console.log(res);
           resolve(res);
       },
       fail: function (err) {
-          console.log(err);
+          // console.log(err);
           // return false;
           reject(err);
       }

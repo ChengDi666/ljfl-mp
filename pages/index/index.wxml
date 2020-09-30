@@ -1,4 +1,4 @@
-<navigator url="/pages/shop/select">
+<navigator url="/pages/shop/select?action=switch">
   <view wx:if="{{shopInfo}}" class="shops-container">
     <view class="l">
       <image src="/images/order-details/icon-address.png"></image>

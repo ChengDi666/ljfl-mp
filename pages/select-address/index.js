@@ -84,36 +84,5 @@ Page({
     })
   },
 
-  deleteAddress(e) {
-    const id = e.currentTarget.dataset.id;
-    wx.showModal({
-      title: '提示',
-      content: '确定要删除该收货地址吗？',
-      success: async (res) => {
-        if (res.confirm) {
-          //  获取详细地址信息
-          const AddressMessage = await WXAPI.addressDetail(wx.getStorageSync('token'), id)
-          this.setCustomers(AddressMessage.data.extJson.myAddressId);
-          WXAPI.deleteAddress(wx.getStorageSync('token'), id).then(function () {
-            wx.navigateBack({})
-          });
-        } else {
-          // console.log('用户点击取消')
-        }
-      }
-    })
-  },
-
-
-  setCustomers(id) {
-    //  删除后更新地址
-    const arr = this.data.customers.addresses.data.map((item) => {
-      if (id != item.id) { return item; }
-    }).filter(item => item);
-    Add.amendCustomersAddress({
-      address: { data: arr },
-      id: this.data.customers.id
-    });
-  }
 
 })
