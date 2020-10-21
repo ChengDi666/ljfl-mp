@@ -188,6 +188,13 @@ App({
         })
       }
     }
+    if(wx.getStorageSync('token')) {  //  更新号码信息
+      WXAPI.userDetail(wx.getStorageSync('token')).then(res => {
+        if(res.code == 0) {
+          wx.setStorageSync('mobile', res.data.base.mobile);
+        }
+      });
+    }
     // 自动登录
     AUTH.checkHasLogined().then(isLogined => {
       if (!isLogined) {

@@ -15,10 +15,10 @@ Page({
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-    console.log(options)
+    // console.log(options)
     if(options.action != "switch" && wx.getStorageSync('shopInfo')) {
       //  不是切换过来的，且缓存了门店信息
-      console.log('有门店了')
+      // console.log('有门店了')
       wx.switchTab({
         url: '/pages/index/index'
       })

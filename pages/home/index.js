@@ -48,23 +48,22 @@ Page({
     wx.showLoading({
       title: '正在同步中',
     })
-    console.log(this.data.address_id);
+    // console.log(this.data.address_id);
     if(this.data.address_id) {
       Add.getCustomers({addressid: this.data.address_id}).then((res) => {
-        console.log(res)
-        let asd = [];
+        // console.log(res)
         if(res.data.length != 0) {
           console.log('有值')
 
           // return ;
           res.data.forEach(async element => {
             const items = await this.getUserMessage(element.phonenumber);
+            // console.log(items);
             // items.nicks = items.nick
             // items.avatarUrls = items.avatarUrl
             
-            this.getusers(items.uid);
+            this.getusers(items.data.uid);
             // console.log(items);
-            // asd.push(items);
             // const user = this.data.users;
             // user.push(items);
             // this.setData({
@@ -162,7 +161,7 @@ getsss() {
       } else {
         Add.scoresTo(wx.getStorageSync('uid'), this.data.selectUser.uid, this.data.scores).then((res) => {
           wx.hideLoading();
-          console.log(res);
+          // console.log(res);
           if(res.statusCode == 200) {
             this.setData({
               showPopUp: false
@@ -227,13 +226,15 @@ getsss() {
     });
   },
   async goSearch() {  //  通过手机号查询
-    wx.showLoading();
-    console.log(this.data.phonenumber);
+    wx.showLoading({
+      title: '正在搜索'
+    });
+    // console.log(this.data.phonenumber);
     if(this.data.phonenumber != '' && this.data.phonenumber.length == 11) {
       console.log('符合规范： ',this.data.phonenumber);
       const searchUser = await this.getUserMessage(this.data.phonenumber);
-      console.log(searchUser)
-      if(searchUser == undefined) { //  没有用户
+      // console.log(searchUser)
+      if(searchUser.data == undefined) { //  没有用户
         wx.hideLoading();
         wx.showToast({
           title: '查无此用户',
@@ -242,7 +243,7 @@ getsss() {
         return ;
       }
       this.setData({
-        listArr: [searchUser]
+        listArr: [searchUser.data]
       })
       wx.hideLoading();
     } else {
@@ -269,9 +270,9 @@ getsss() {
     });
   },
   getusers(id) {  //  关注某人
-    console.log(id);
+    // console.log(id);
     WXAPI.addAttention(wx.getStorageSync('token'), id).then((res) => {
-      console.log(res);
+      // console.log(res);
       if(res.code == 0) {
         this.setData({
           listArr: [],
@@ -305,15 +306,18 @@ getsss() {
   },
 
 
-  onLoad: function(options) {
-    // this.myHome();
-    console.log(options)
-    if(options.phone) {
+  onLoad: async function(options) {
+    // console.log(options)
+    const custorme = await AUTH.customerCheck();
+    if(custorme && options.phone) { //  是客户，显示同步
       Add.getCustomers({phonenumber: options.phone}).then(res => {
-        console.log(res);
-        this.setData({
-          address_id: res.data[0].address_id
-        })
+        // console.log(res);
+        if(res.data.length != 0) {
+          this.setData({
+            address_id: res.data[0].address_id
+          })
+          return ;
+        }
       });
     }
   },
@@ -322,10 +326,27 @@ getsss() {
   },
 
   onShow: function() {
-    AUTH.checkHasLogined().then(isLogined => {
+    AUTH.checkHasLogined().then(async isLogined => {
       // console.log(isLogined);
       if (isLogined) {
-        this.userList();
+        const b = await WXAPI.userDetail(wx.getStorageSync('token'))
+        if(!b.data.base.mobile) {
+          wx.showToast({
+            title: '未绑定手机号',
+            icon: 'none',
+            duration: 2000,
+            mask: true
+          })
+          setTimeout(() => {
+            wx.switchTab({
+              url: "/pages/my/index"
+            })
+          }, 1000);
+        } else {
+          // console.log('绑定了手机');
+          //  登录且绑定手机号
+          this.userList();
+        }
       } else {
         wx.showModal({
           title: '提示',

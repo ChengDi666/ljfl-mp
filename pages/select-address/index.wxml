@@ -1,7 +1,7 @@
 <view class="container">
   <view class="address-list">
     <view class="a-address" wx:for="{{addressList}}" wx:key="id">
-      <view class="left-text" bindtap="editAddess" data-id="{{item.id}}">
+      <view class="left-text">
         <view class="name-tel">
           {{item.linkMan}} {{item.mobile}}
         </view>
@@ -9,11 +9,13 @@
           {{item.address}}
         </view>
       </view>
-      <view class="right-edit" bindtap="editAddess" data-id="{{item.id}}">
-        <image src="/images/icon/edit.svg"></image>
+      <view wx:if="{{isCustorme}}" class="right-edit" bindtap="editAddess" data-id="{{item.id}}" style="width: 200rpx;text-align: center;">
+        <image src="/images/icon/edit.svg" style="padding: 15rpx 0;"></image>
         <!-- <image src="/images/icon/delete.svg"></image> -->
       </view>
     </view>
+
+
     <view class="bottom-box" bindtap="addAddess" wx:if="{{addressList.length == 0 || addressList == null}}">
       <view class="add-btn">
         <image src="/images/add-addr.png"></image>
@@ -21,5 +23,11 @@
       </view>
       <image class="next" src="/images/icon/next.png"></image>
     </view>
+    
+    <view wx:if="{{addressList.length == 0 || addressList == null}}" class="weui-loadmore weui-loadmore_line" style='margin-top:200rpx;'>
+      <view class="weui-loadmore__tips weui-loadmore__tips_in-line">您还没有地址</view>
+    </view>
+    
+
   </view>
 </view>

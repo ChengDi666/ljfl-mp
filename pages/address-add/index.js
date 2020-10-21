@@ -328,14 +328,14 @@ async CustomersAddress() {
     },
 async bindSave(e) {
   // console.log(this.data.add_id)
-  if(await this.CustomersAddress()) {
-    //  地址已存在
-    wx.showToast({
-      title: '地址已存在',
-      icon: 'none'
-    })
-    return ;
-  }
+  // if(await this.CustomersAddress()) {  //  绑定地址到平台
+  //   //  地址已存在
+  //   wx.showToast({
+  //     title: '地址已存在',
+  //     icon: 'none'
+  //   })
+  //   return ;
+  // }
   if (!this.data.checkedAdd.id) {
     wx.showToast({
       title: '请选择地址',
@@ -344,36 +344,12 @@ async bindSave(e) {
     })
     return
   }
-  const addressName = await Add.getAddressName(this.data.add_id.id);
-  let p_id;
-  let c_id;
-  await this.data.provinces.map((item) => {
-    if(item.name == addressName.data[0]) {
-      p_id = item.id
-    }
-  })
-  if (p_id == undefined) {
-    wx.showToast({
-      title: '网络不稳，请稍后重试',
-      icon: 'none'
-    });
-    return ;
-  };
-  const cities = await WXAPI.nextRegion(p_id);
-  await cities.data.map((item) => {
-    if(item.name == addressName.data[1]) {
-      c_id = item.id
-    }
-  })
-  if (c_id == undefined) {
-    wx.showToast({
-      title: '网络不稳，请稍后重试',
-      icon: 'none'
-    });
-    return ;
-  };
-  addressName.data.splice(0,2);
-  const shortAddress = addressName.data.join('.')
+  const addressCode = await Add.getPostcode();
+  const addressName = await Add.queryScode(this.data.add_id.id);
+  // console.log(addressName);
+  const shortAddress = addressName.data[0].fullname.replace(addressCode.data.cityname,"")
+  // console.log(addressCode);
+  // console.log(shortAddress);
   if (shortAddress == "") {
     wx.showToast({
       title: '请填写详细地址',
@@ -388,8 +364,8 @@ async bindSave(e) {
     address: shortAddress,
     mobile: this.data.mobile,
     isDefault: 'true', //  是否为默认地址
-    provinceId: p_id,
-    cityId: c_id,
+    provinceId: addressCode.data.provincecode,
+    cityId: addressCode.data.citycode,
     // extJsonStr: JSON.stringify({ myAddressId: this.data.add_id.id}),  //  附加信息
   }
   let apiResult
@@ -416,11 +392,11 @@ async bindSave(e) {
    * 生命周期函数--监听页面初次渲染完成
    */
   async onReady () {
-    //  通过本地存储的token 获取Openid
-    const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
-    this.setData({
-      user_unionid: a.data.unionid
-    })
+    // //  通过本地存储的token 获取Openid
+    // const a =  await WXAPI.userWxinfo(wx.getStorageSync('token'))
+    // this.setData({
+    //   user_unionid: a.data.unionid
+    // })
     const b = await WXAPI.userDetail(wx.getStorageSync('token'))
     if(!b.data.base.mobile) {
       wx.showToast({

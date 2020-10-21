@@ -86,6 +86,7 @@ async function login(page){
         }
         wx.setStorageSync('token', res.data.token)
         wx.setStorageSync('uid', res.data.uid)
+        wx.setStorageSync('mobile', res.data.mobile)
         if ( page ) {
           page.onShow()
         }
@@ -269,6 +270,17 @@ function UserScoreLog(messages, adminToken) {
     });
 }
 
+
+function customerCheck() {  //  检查用户是否存在
+  return myApi.getCustomers({phonenumber: wx.getStorageSync('mobile')}).then(res => {
+    // console.log(res);
+    if(res.data.length != 0) {
+      return true;
+    }
+    return false;
+  });
+}
+
 module.exports = {
   checkHasLogined: checkHasLogined,
   wxaCode: wxaCode,
@@ -277,5 +289,6 @@ module.exports = {
   register: register,
   loginOut: loginOut,
   checkAndAuthorize: checkAndAuthorize,
-  asyncScode
+  asyncScode,
+  customerCheck
 }

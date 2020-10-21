@@ -21,7 +21,7 @@
 
         <view style="margin: 20px 0 10px">
           <view class="weui-cells__title" style="margin-bottom: 10px;">我的关注
-            <view style="display: initial;float: right;padding: 0 20px;" bindtap="shezhi">
+            <view wx:if="{{address_id}}" style="display: initial;float: right;padding: 0 20px;" bindtap="shezhi">
               <image src="/images/nav/ic_catefory_normal.png" style="width: 20px;height: 20px;"></image>
             </view>
           </view>

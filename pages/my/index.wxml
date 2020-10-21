@@ -145,9 +145,9 @@
     <view class="l">我的手机</view>
     <view class="r">{{ userMobile }}</view>
   </view>
-  <view  wx:else class="menu-item">
+  <view wx:else class="menu-item">
     <view class="l">绑定手机</view>
-    <button type="primary" size="mini" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">立即绑定</button>
+    <button type="primary" size="mini" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">绑定手机</button>
   </view>
   <view class="line"></view>
   <view wx:if="{{userCardno}}" class="menu-item">

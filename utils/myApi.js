@@ -101,9 +101,11 @@ function getUserMessage(userData) {
     wx.request({
       url: `${urls.myLink}/api/customers`,
       data: {
+        avatarurl: userData.avatarurl,
         nickname: userData.nickname,
         realname: userData.nickname,
         phonenumber: userData.phonenumber,
+        score: userData.score,
         address_id: userData.address_id,
         unionid: userData.unionid,
         user_id: userData.user_id,
@@ -236,6 +238,29 @@ function getFormData(urls,datas) {
 }
 
 
+
+function getPostcode() { 
+  //  获取省市编码
+  return new Promise((resolve, reject) => {
+    wx.request({
+        url: `${urls.myLink}/api/postcode`,
+        method: 'get',
+        header: {
+            'content-type': 'application/x-www-form-urlencoded'
+        },
+        success: function (res) {
+            // console.log(res);
+            resolve(res);
+        },
+        fail: function (err) {
+            // console.log(err);
+            reject(err.errMsg);
+        }
+    });
+  });
+}
+
+
 module.exports = {
   address: Address,
   AddressRange: AddressRange,
@@ -248,5 +273,6 @@ module.exports = {
   queryScode,
   getAddresses,
   getUserId,
-  scoresTo
+  scoresTo,
+  getPostcode
 }

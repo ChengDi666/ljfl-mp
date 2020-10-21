@@ -1,8 +1,8 @@
 <navigator url="/pages/shop/select?action=switch">
-  <view wx:if="{{shopInfo}}" class="shops-container">
+  <view class="shops-container">
     <view class="l">
-      <image src="/images/order-details/icon-address.png"></image>
-      <text>{{shopInfo.name}}</text>
+      <image wx:if="{{shopInfo}}" src="/images/order-details/icon-address.png"></image>
+      <text wx:if="{{shopInfo}}">{{shopInfo.name}}</text>
     </view>
     <view class="r">
       <text>切换门店</text>

@@ -17,7 +17,7 @@
     <navigator url="/pages/goods-details/index?id={{item.id}}"><image class="img" mode="aspectFill" src="{{item.pic}}"></image></navigator>
     <view class="goods-info">
       <view class="title ellipsis"><navigator url="/pages/goods-details/index?id={{item.id}}">{{item.name}}</navigator></view>
-      <view class="price">¥ {{item.minPrice}}</view>
+      <view class="price">¥ {{item.minPrice}} + {{item.minScore}} 积分</view>
       <view class="buy-info">
         <view class="num">已售出{{item.numberSells}}件</view>
         <image class="car" src="/images/icon/car.svg" data-id="{{item.id}}" bindtap="addShopCar"></image>
@@ -30,7 +30,7 @@
     <navigator url="/pages/goods-details/index?id={{item.id}}"><image class="img" mode="aspectFill" src="{{item.pic}}"></image></navigator>
     <view class="goods-info">
       <view class="title"><navigator url="/pages/goods-details/index?id={{item.id}}">{{item.name}}</navigator></view>
-      <view class="price">¥ {{item.minPrice}}</view>
+      <view class="price">¥ {{item.minPrice}} + {{item.minScore}} 积分</view>
       <view class="buy-info">
         <view class="num">{{item.numberOrders}}人已购{{item.numberSells}}件</view>
         <image class="car" src="/images/icon/car.svg" data-id="{{item.id}}" bindtap="addShopCar"></image>
