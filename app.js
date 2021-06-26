@@ -201,6 +201,30 @@ App({
         AUTH.login()
       }
     })
+    setTimeout(() => {
+      AUTH.checkBindingAddress().then(res => { // 检查是否绑定平台
+        console.log(res)
+        if(res.code == 100) return // 未绑定手机
+        if(res.code == 200 && res.msg == 'ok') return; // 已绑定
+        if(res.code != 200) { // 错误提示
+          setTimeout(() => {
+            wx.showToast({
+              title: '用户信息尚未同步，部分功能无法使用！',
+              icon: 'none',
+              duration: 2000
+            })
+          }, 2000);
+          return;
+        }
+        // console.log('正确：', res.msg)
+        // 绑定成功提示
+        wx.showModal({
+          title: '温馨提示',
+          content: res.msg,
+          showCancel: false
+        })
+      })
+    }, 2000);
   },
   globalData: {                
     isConnected: true

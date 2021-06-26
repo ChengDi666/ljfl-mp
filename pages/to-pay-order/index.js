@@ -130,6 +130,14 @@ Page({
       // console.log('没绑定手机号');
       return ;
     }
+    const checkAddress = await AUTH.checkBindingAddress()
+    console.log(checkAddress)
+    if(checkAddress.code != 200) {
+      wx.showToast({
+        title: '用户信息尚未同步，部分功能无法使用！',
+        icon: 'none'
+      })
+    }
     const subscribe_ids = wx.getStorageSync('subscribe_ids')
     if (subscribe_ids) {
       wx.requestSubscribeMessage({

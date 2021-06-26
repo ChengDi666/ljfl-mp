@@ -14,6 +14,99 @@ async function checkSession(){
   })
 }
 
+async function checkBindingAddress(users) { // 检查是否绑定平台
+  const checkTokenRes = await WXAPI.checkToken(wx.getStorageSync('token'))
+  // console.log(checkTokenRes)
+  if(checkTokenRes.code != 0 || checkTokenRes.msg != 'success') { // token 失效
+    return {code: 100, msg: 'token 失效'}
+  }
+  const userInfo = await WXAPI.userDetail(wx.getStorageSync('token')) // 商城用户信息
+  // console.log(userInfo)
+  if( userInfo.code != 0 ) return { code: 100, msg: '没有用户信息' } // 没有用户信息
+  const phone = userInfo.data.base.mobile ? userInfo.data.base.mobile :wx.getStorageSync('mobile')
+  // console.log(phone)
+  if(!phone || phone == '') return {code: 100, msg: '尚未绑定手机号'}
+  const queryAddress = await WXAPI.queryAddress(wx.getStorageSync('token')) // 商城用户地址列表
+  // console.log(queryAddress.data)
+  if(queryAddress.data && queryAddress.data.length) { return { code: 200, msg: 'ok' } } // 商城有绑定地址
+  // const userInfo = await WXAPI.userDetail(wx.getStorageSync('token')) // 商城用户信息
+  return myApi.getCustomers({phonenumber: phone}).then(async res => {
+    console.log(res.data)
+    // return { code: 200, msg: 'ok' }
+    const data = res.data[0]
+    if(data && data.address_id) { // 用户存在且有地址
+      const address = await asyncAddresses(data, data.nickname, data.phonenumber);  // 同步地址
+      const scode = await asyncScode(data.phonenumber, data.score, '注册同步积分');  // 同步积分
+      const cardno = await syncCardno(userInfo.data, data.cardno)   // 同步卡号
+      let str = '', err = ''
+      address ? str += '地址' : err += '地址'
+      cardno ? str += '，卡号' : err += '，卡号'
+      scode ? str += '，积分' : err += '，积分'
+      // console.log(msg)
+      str == '' ? str = '' : str += ' 同步成功'
+      err == '' ? err = '' : err += ' 同步失败'
+      return {code: 200, msg: str + err }
+    } else {
+      return {code: 0, msg: '系统用户未注册'}
+    }
+  })
+}
+
+async function syncCardno(data, cardno) {  //  同步卡号到商城 (商城用户信息， 平台卡号)
+  const messages = {
+    avatarUrl: data.base.avatarUrl,
+    city: data.base.city,
+    nick: data.base.nick,
+    province: data.base.province,
+    extJsonStr: JSON.stringify({ cardno }),  //  附加信息
+    token: wx.getStorageSync('token')
+  };
+  // console.log(messages)
+  const cardnoData = await WXAPI.modifyUserInfo(messages)
+  if(cardnoData.msg == "success") return true;
+  return false
+}
+
+async function asyncAddresses(data, nick, mobile) { // 同步地址
+   await delAllAddress(); // 清空用户地址
+   // console.log(data);
+   if(data.address_id == null) { //  用户没绑定地址
+     // console.log('用户没绑定地址');
+     return true;
+   }
+   const addressCode = await myApi.getPostcode(); // 地址编码
+   const addressName = await myApi.queryScode(data.address_id); // 平台绑定地址
+   const shortAddress = addressName.data[0].fullname.replace(addressCode.data.cityname,"")
+   if(addressName.data == undefined || addressName.data.length == 0) { //  地址名称分解接口有问题,需要绑定提示
+     return false; 
+   }
+   const postData = {
+     token: wx.getStorageSync('token'),
+     linkMan: nick,
+     address: shortAddress,
+     mobile: mobile,
+     isDefault: 'true', //  是否为默认地址
+     provinceId: addressCode.data.provincecode,
+     cityId: addressCode.data.citycode,
+     // extJsonStr: JSON.stringify({ myAddressId: data.id}),  //  附加信息
+   }
+   const address = await WXAPI.addAddress(postData) // 添加地址返回
+   if(address.code == 0 && address.msg == 'success') return true;
+   return false;
+}
+
+async function delAllAddress() {
+  //  删除商城全部地址
+  WXAPI.queryAddress(wx.getStorageSync('token')).then(function(res) {
+    if (res.code == 0) {
+      res.data.map((item) => {
+        // console.log(item.id);
+        WXAPI.deleteAddress(wx.getStorageSync('token'), item.id);
+      });
+    }
+  })
+}
+
 // 检测登录状态，返回 true / false
 async function checkHasLogined() {
   const token = wx.getStorageSync('token')
@@ -177,19 +270,18 @@ async function checkAndAuthorize (scope) {
 }
 
  async function asyncScode(mobile, score, text) { //  同步积分
-    //  绿分
+    //  合肥
   var urls = 'https://user.api.it120.cc';
   const datas = {
-      merchantNo: '2005060925355435',
-      merchantKey: '00dfbdb296ec754d2899102eac0434a6',
+      merchantNo: '2006131424420936',
+      merchantKey: '5f036a02f929bfac3fd5a2af0ed4a306',
     };
   
   const adminToken = await myApi.getFormData(`${urls}/login/key`, datas);   //  登录
   // console.log(adminToken);
   const isOK = await delScore(mobile, adminToken);  //  清空积分
-  if(!isOK) { //  清除积分失败
-    return false;
-  }
+  if(!isOK) { return false; } //  清除积分失败
+  // if(!score) { return true } // 已清空积分，且传入积分为0
   const messages = {
     score: score,
     mobile: mobile,
@@ -290,5 +382,6 @@ module.exports = {
   loginOut: loginOut,
   checkAndAuthorize: checkAndAuthorize,
   asyncScode,
-  customerCheck
+  customerCheck,
+  checkBindingAddress
 }

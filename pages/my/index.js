@@ -69,10 +69,18 @@ Page({
   },
   async registerCustomer(data) {
     // console.log(data)
+    console.log('绑定手机')
     const CustomerAddress = await Add.getCustomers({phonenumber: data.mobile});
     // console.log(CustomerAddress);
     if(CustomerAddress.data.length == 0) {  //  在平台没数据, 不与平台关联
       // console.log('在平台没数据, 不与平台关联');
+      setTimeout(() => {
+        wx.showToast({
+          title: '用户信息尚未同步，部分功能无法使用！',
+          icon: 'none',
+          duration: 3000
+        })
+      }, 1500);
       return;
     }
     //  绑定手机时调用

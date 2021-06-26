@@ -11,7 +11,12 @@ Page({
    * 页面的初始数据
    */
   data: {
-    tabs: ["二维码","可领券", "已领券", "已失效"],
+    tabs: [
+      "二维码",
+      // "可领券",
+      // "已领券",
+      // "已失效"
+    ],
     activeIndex: 0,
     showPwdPop: false,
     showImg: false,

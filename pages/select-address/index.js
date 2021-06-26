@@ -48,12 +48,6 @@ Page({
     // })
   },
   onShow: async function() {
-    const custorme = await AUTH.customerCheck();
-    if(!custorme) { //  不是客户，显示修改
-      this.setData({
-        isCustorme: true
-      });
-    }
     AUTH.checkHasLogined().then(isLogined => {
       if (isLogined) {
         this.initShippingAddress();

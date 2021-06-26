@@ -164,8 +164,8 @@
     <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多啦</view>
   </view>
 </view>
-<view class='coupons-float' bindtap="goCoupons">
-  <image src="/images/gift.png"></image>
+<view class='coupons-float' bindtap="goCoupons" style="bottom: 37%;">
+  <image src="/images/qrcode.png"></image>
 </view>
 
 <navigator wx:if="{{aliveRooms}}" url="plugin-private://wx2b03c6e691cd7370/pages/live-player-plugin?room_id={{aliveRooms[0].roomid}}">
